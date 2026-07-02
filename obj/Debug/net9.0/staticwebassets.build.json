@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "fbJsnngMJ3f8knTZSOSGmYNhpYn8smlXo96hT7ebtTg=",
+  "Source": "ng-ecommerce-api",
+  "BasePath": "_content/ng-ecommerce-api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
