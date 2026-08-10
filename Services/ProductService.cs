@@ -1,3 +1,4 @@
+using ng_ecommerce_api.Data;
 using ng_ecommerce_api.DTOs.Products;
 using ng_ecommerce_api.Models;
 
@@ -5,7 +6,13 @@ namespace ng_ecommerce_api.Services;
 
 public class ProductService : IProductService
 {
-    private static readonly List<Product> Products = new();
+    // private static readonly List<Product> Products = new();
+    private readonly AppDbContext _context;
+    
+    public ProductService(AppDbContext context)
+    {
+        _context = context;
+    }
 
     public IEnumerable<ProductDto> GetAllProducts()
     {
@@ -33,6 +40,24 @@ public class ProductService : IProductService
             Category = product.Category,
             InStock = product.InStock
         };
+    }
+    
+    public async Task<List<ProductDto>> SearchProductByNameAsync(string name)
+    {
+        var results = await _context.Products
+            .Where(p => p.Name.Contains(name))
+            .Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                ImageUrl = p.ImageUrl,
+                Category = p.Category
+            })
+            .ToListAsync();
+
+        return results;
     }
 
     public ProductDto? GetProductByName(string name)

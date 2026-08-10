@@ -8,6 +8,7 @@ public interface IProductService
 
     ProductDto? GetProductById(Guid id);
     ProductDto? GetProductByName(string name);
+    ProductDto? SearchProductByName(string name);
     List<ProductDto> GetProductByCategory(string category);
     
 

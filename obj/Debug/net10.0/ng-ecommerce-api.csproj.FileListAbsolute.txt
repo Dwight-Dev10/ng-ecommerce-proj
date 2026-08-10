@@ -158,3 +158,4 @@
 /home/dee100/Documents/Projects/CSharpProjects/ng-ecommerce-api/ng-ecommerce-api/bin/Debug/net10.0/zh-Hant/Microsoft.Data.SqlClient.resources.dll
 /home/dee100/Documents/Projects/CSharpProjects/ng-ecommerce-api/ng-ecommerce-api/bin/Debug/net10.0/runtimes/unix/lib/net9.0/Microsoft.Data.SqlClient.dll
 /home/dee100/Documents/Projects/CSharpProjects/ng-ecommerce-api/ng-ecommerce-api/bin/Debug/net10.0/runtimes/win/lib/net9.0/Microsoft.Data.SqlClient.dll
+/home/dee100/Documents/Projects/CSharpProjects/ng-ecommerce-api/ng-ecommerce-api/obj/Debug/net10.0/ng-ecommerce-api.sourcelink.json
