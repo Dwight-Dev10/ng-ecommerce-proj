@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ng_ecommerce_api.Data;
 using ng_ecommerce_api.DTOs.Products;
-using ng_ecommerce_api.Models;
 using ng_ecommerce_api.Services;
 
 namespace ng_ecommerce_api.Controller;
@@ -12,23 +9,17 @@ namespace ng_ecommerce_api.Controller;
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
-    private readonly AppDbContext _context;
     
-    
-    public ProductsController(IProductService productService,
-        AppDbContext context)
+    public ProductsController(IProductService productService)
     {
-        // _productService = productService;
-        _context = context;
+        _productService = productService;
     }
-
-    // private static readonly List<Product> Products;
     
     // GET
     [HttpGet]
-    public async Task<ActionResult> GetProducts()
+    public async Task<IActionResult> GetProducts()
     {
-        var products = await _context.Products.ToListAsync();
+        var products = await _productService.GetAllProducts();
         return Ok(products);
     }
     
@@ -36,7 +27,7 @@ public class ProductsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById(Guid id)
     {
-        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+        var product = await _productService.GetProductById(id);
         if (product == null)
         {
             return NotFound();
@@ -48,25 +39,29 @@ public class ProductsController : ControllerBase
     [HttpGet("name/{name}")]
     public async Task<IActionResult> GetProductsByName(string name)
     {
-        var productsWithName = await _context.Products
-            .Where(p => p.Name.ToLower() == name.ToLower()).ToListAsync();
+        var product = await _productService.GetProductByName(name);
 
-        if (!productsWithName.Any())
+        if (product == null)
         {
             return NotFound($"No products found with name: {name}");
         }
-        return Ok(productsWithName);
+        return Ok(product);
     }
 
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchProducts(string name)
+    {
+        var products = await _productService.GetProductByName(name);
+        return Ok(products);
+    }
+    
     // GET products by Category
     [HttpGet("category/{category}")]
     public async Task<IActionResult> GetProductsByCategory(string category)
     {
 
-        var productsInCategory = await _context.Products
-            .Where(p => p.Category.ToLower() == category.ToLower())
-            .ToListAsync();
-        if (productsInCategory.Count() > 0)
+        var productsInCategory = await _productService.GetProductByCategory(category);
+        if (productsInCategory.Any())
         {
             return Ok(productsInCategory);
         }
@@ -77,23 +72,8 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody]CreateProductDto productDto)
     {
-        var product = new Product
-        {
-            Id = Guid.NewGuid(),
-            Name = productDto.Name,
-            Description = productDto.Description,
-            Price = productDto.Price,
-            ImageUrl = productDto.ImageUrl,
-            Category = productDto.Category,
-            
-            Rating = 0,
-            ReviewCount = 0,
-            InStock = true,
-
-        };
-        _context.Products.Add(product);
-        await _context.SaveChangesAsync();
-        
+        var product = await _productService.CreateProduct(productDto);
+      
         return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
     }
     
@@ -102,19 +82,10 @@ public class ProductsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductDto updateProduct)
     {
-        var  product =  await _context.Products.FindAsync(id);
+        var  product =  await _productService.UpdateProduct(id, updateProduct);
 
-        if (product == null) return NotFound();
+        if (!product) return NotFound();
         
-        product.Name = updateProduct.Name;
-        product.Description = updateProduct.Description;
-        product.Price = updateProduct.Price;
-        product.ImageUrl = updateProduct.ImageUrl;
-        product.InStock = updateProduct.InStock;
-        product.Category = updateProduct.Category;
-        
-        await _context.SaveChangesAsync();
-
         return NoContent();
     }
     
@@ -122,41 +93,20 @@ public class ProductsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProduct(Guid id)
     {
-        var  product = await _context.Products.FindAsync(id);
+        var product = await _productService.DeleteProduct(id);
         
-        if (product == null) return NotFound();
-
-        _context.Products.Remove(product);
+        if (!product) return NotFound();
         
-        await _context.SaveChangesAsync();
-
         return NoContent();
 
     }
 
-
     [HttpGet("count")]
     public async Task<IActionResult> Count()
     {
-        var count = await _context.Products.CountAsync();
+        var count = await _productService.GetProductCount();
 
         return Ok(count);
     }
-    // [HttpPost("seed")]
-    // public async Task<IActionResult> Seed()
-    // {
-    //     if (await _context.Products.AnyAsync())
-    //         return BadRequest("Database already seeded");
-    //
-    //     await _context.Products.AddRangeAsync(Products);
-    //
-    //     await _context.SaveChangesAsync();
-    //
-    //     return Ok("Products added");
-    // }
-    //
-    
-    
-    
     
 }

@@ -4,17 +4,18 @@ namespace ng_ecommerce_api.Services;
 
 public interface IProductService
 {
-    IEnumerable<ProductDto> GetAllProducts();
+    Task<IEnumerable<ProductDto>> GetAllProducts();
 
-    ProductDto? GetProductById(Guid id);
-    ProductDto? GetProductByName(string name);
-    ProductDto? SearchProductByName(string name);
-    List<ProductDto> GetProductByCategory(string category);
+    Task<ProductDto?> GetProductById(Guid id);
+    Task<ProductDto?> GetProductByName(string name);
+    Task<IEnumerable<ProductDto>> SearchProductsByName(string name);
+    Task<IEnumerable<ProductDto>> GetProductByCategory(string category);
     
+    Task<ProductDto> CreateProduct(CreateProductDto dto);
 
-    ProductDto CreateProduct(CreateProductDto dto);
+    Task<bool> UpdateProduct(Guid id, UpdateProductDto dto);
 
-    bool UpdateProduct(Guid id, UpdateProductDto dto);
+    Task<bool> DeleteProduct(Guid id);
 
-    bool DeleteProduct(Guid id);
+    Task<int> GetProductCount();
 }

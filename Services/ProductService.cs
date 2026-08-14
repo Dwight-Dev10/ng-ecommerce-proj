@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ng_ecommerce_api.Data;
 using ng_ecommerce_api.DTOs.Products;
 using ng_ecommerce_api.Models;
@@ -6,7 +7,6 @@ namespace ng_ecommerce_api.Services;
 
 public class ProductService : IProductService
 {
-    // private static readonly List<Product> Products = new();
     private readonly AppDbContext _context;
     
     public ProductService(AppDbContext context)
@@ -14,37 +14,34 @@ public class ProductService : IProductService
         _context = context;
     }
 
-    public IEnumerable<ProductDto> GetAllProducts()
+    public async Task<IEnumerable<ProductDto>> GetAllProducts()
     {
-        return Products.Select(p => new ProductDto
+        return await _context.Products.Select(p => new ProductDto
         {
             Id = p.Id,
             Name = p.Name,
             Price = p.Price,
             Category = p.Category,
             InStock = p.InStock
-        });
+        }).ToListAsync();
     }
 
-    public ProductDto? GetProductById(Guid id)
+    public async Task<ProductDto?> GetProductById(Guid id)
     {
-        var product = Products.FirstOrDefault(p => p.Id == id);
-
-        if (product == null) return null;
-
-        return new ProductDto
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Price = product.Price,
-            Category = product.Category,
-            InStock = product.InStock
-        };
+        return await _context.Products.Where(p => p.Id == id)
+            .Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                Category = p.Category,
+                InStock = p.InStock
+            }).FirstOrDefaultAsync();
     }
     
-    public async Task<List<ProductDto>> SearchProductByNameAsync(string name)
+    public async Task<IEnumerable<ProductDto>> SearchProductsByName(string name)
     {
-        var results = await _context.Products
+        return await _context.Products
             .Where(p => p.Name.Contains(name))
             .Select(p => new ProductDto
             {
@@ -56,45 +53,38 @@ public class ProductService : IProductService
                 Category = p.Category
             })
             .ToListAsync();
-
-        return results;
     }
 
-    public ProductDto? GetProductByName(string name)
+    public async Task<ProductDto?> GetProductByName(string name)
     {
-        var product = Products.FirstOrDefault(name => name.Equals(name));
-        
-        if (product == null) return null;
-        return new ProductDto
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Price = product.Price,
-            Category = product.Category,
-            InStock = product.InStock
-        };
+        return await _context.Products
+            .Where(p => p.Name == name)
+            .Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                Description = p.Description,
+                Category = p.Category,
+                InStock = p.InStock
+            }).FirstOrDefaultAsync();
     }
 
-    public List<ProductDto> GetProductByCategory(string category)
+    public async Task<IEnumerable<ProductDto>> GetProductByCategory(string category)
     {
-        // var product = Products.FirstOrDefault(p => p.Category == category);
-        
-
-        var product = Products
+        return await _context.Products
             .Where(p => p.Category.ToLower() == category.ToLower())
             .Select(p => new ProductDto
             {
                 Id = p.Id,
                 Name = p.Name,
                 Price = p.Price,
+                Description = p.Description,
                 Category = p.Category
-            }).ToList();
-
-        return product;
-
+            }).ToListAsync();
     }
 
-    public ProductDto CreateProduct(CreateProductDto dto)
+    public async Task<ProductDto> CreateProduct(CreateProductDto dto)
     {
         var product = new Product
         {
@@ -104,24 +94,28 @@ public class ProductService : IProductService
             Price = dto.Price,
             ImageUrl = dto.ImageUrl,
             Category = dto.Category,
+            Rating = 0,
+            ReviewCount = 0,
             InStock = true
         };
 
-        Products.Add(product);
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
 
         return new ProductDto
         {
             Id = product.Id,
             Name = product.Name,
             Price = product.Price,
+            // Description = product.Description,
             Category = product.Category,
             InStock = product.InStock
         };
     }
     
-    public bool UpdateProduct(Guid id, UpdateProductDto dto)
+    public async Task<bool> UpdateProduct(Guid id, UpdateProductDto dto)
     {
-        var product = Products.FirstOrDefault(p => p.Id == id);
+        var product = await _context.Products.FindAsync(id);
 
         if (product == null) return false;
 
@@ -132,17 +126,27 @@ public class ProductService : IProductService
         product.Category = dto.Category;
         product.InStock = dto.InStock;
 
+        await _context.SaveChangesAsync();
+
         return true;
     }
     
-    public bool DeleteProduct(Guid id)
+    public async Task<bool> DeleteProduct(Guid id)
     {
-        var product = Products.FirstOrDefault(p => p.Id == id);
+        var product = await _context.Products.FindAsync(id);
 
         if (product == null) return false;
 
-        Products.Remove(product);
+        _context.Products.Remove(product);
+        await _context.SaveChangesAsync();
 
         return true;
     }
+
+    public async Task<int> GetProductCount()
+    {
+        return await _context.Products.CountAsync();
+    }
+
+    
 }
