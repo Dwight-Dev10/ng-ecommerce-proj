@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../buildMultiTargeting/ng-ecommerce-api.props" />
+</Project>

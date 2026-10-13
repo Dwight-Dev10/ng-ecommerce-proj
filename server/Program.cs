@@ -1,0 +1,55 @@
+using Microsoft.EntityFrameworkCore;
+using ng_ecommerce_api.Data;
+using ng_ecommerce_api.Services;
+using Scalar.AspNetCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+
+builder.Services.AddScoped<IProductService, ProductService>();
+
+// builder.Services.AddDbContext<AppDbContext>(options =>
+//     options.UseInMemoryDatabase("NgEcommerceDb"));
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularEcommercePolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference(options => 
+    {
+        options.Title = "Ecommerce APi";
+        options.Theme = ScalarTheme.Saturn;
+        
+    });
+    
+}
+
+
+app.UseHttpsRedirection();
+
+app.UseCors("AngularEcommercePolicy");
+
+app.MapControllers();
+
+
+app.Run();
