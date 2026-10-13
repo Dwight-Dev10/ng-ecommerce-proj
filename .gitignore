@@ -1,0 +1,23 @@
+# Angular / Node.js
+node_modules/
+dist/
+.angular/
+coverage/
+
+# .NET
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+appsettings.*.Local.json
+
+# IDE and OS
+.idea/
+.DS_Store
+Thumbs.db
