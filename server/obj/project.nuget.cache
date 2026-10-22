@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "zPouYgA7qR0=",
+  "dgSpecHash": "jrE1K3TvKNw=",
   "success": true,
-  "projectFilePath": "/home/dee100/Documents/Projects/CSharpProjects/ng-ecommerce-api/ng-ecommerce-api/ng-ecommerce-api.csproj",
+  "projectFilePath": "/home/dee100/Documents/Projects/ng-ecommerce-proj/server/ng-ecommerce-api.csproj",
   "expectedPackageFiles": [
     "/home/dee100/.nuget/packages/azure.core/1.47.1/azure.core.1.47.1.nupkg.sha512",
     "/home/dee100/.nuget/packages/azure.identity/1.14.2/azure.identity.1.14.2.nupkg.sha512",
@@ -62,9 +62,9 @@
       "code": "NU1510",
       "level": "Warning",
       "message": "PackageReference Microsoft.AspNetCore.Cors will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
-      "projectPath": "/home/dee100/Documents/Projects/CSharpProjects/ng-ecommerce-api/ng-ecommerce-api/ng-ecommerce-api.csproj",
+      "projectPath": "/home/dee100/Documents/Projects/ng-ecommerce-proj/server/ng-ecommerce-api.csproj",
       "warningLevel": 1,
-      "filePath": "/home/dee100/Documents/Projects/CSharpProjects/ng-ecommerce-api/ng-ecommerce-api/ng-ecommerce-api.csproj",
+      "filePath": "/home/dee100/Documents/Projects/ng-ecommerce-proj/server/ng-ecommerce-api.csproj",
       "libraryId": "Microsoft.AspNetCore.Cors",
       "targetGraphs": [
         "net10.0"
@@ -74,10 +74,34 @@
       "code": "NU1903",
       "level": "Warning",
       "message": "Package 'Microsoft.OpenApi' 2.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-v5pm-xwqc-g5wc",
-      "projectPath": "/home/dee100/Documents/Projects/CSharpProjects/ng-ecommerce-api/ng-ecommerce-api/ng-ecommerce-api.csproj",
+      "projectPath": "/home/dee100/Documents/Projects/ng-ecommerce-proj/server/ng-ecommerce-api.csproj",
       "warningLevel": 1,
-      "filePath": "/home/dee100/Documents/Projects/CSharpProjects/ng-ecommerce-api/ng-ecommerce-api/ng-ecommerce-api.csproj",
+      "filePath": "/home/dee100/Documents/Projects/ng-ecommerce-proj/server/ng-ecommerce-api.csproj",
       "libraryId": "Microsoft.OpenApi",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Package 'System.Security.Cryptography.Pkcs' 9.0.4 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7",
+      "projectPath": "/home/dee100/Documents/Projects/ng-ecommerce-proj/server/ng-ecommerce-api.csproj",
+      "warningLevel": 1,
+      "filePath": "/home/dee100/Documents/Projects/ng-ecommerce-proj/server/ng-ecommerce-api.csproj",
+      "libraryId": "System.Security.Cryptography.Pkcs",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'System.Security.Cryptography.Pkcs' 9.0.4 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx",
+      "projectPath": "/home/dee100/Documents/Projects/ng-ecommerce-proj/server/ng-ecommerce-api.csproj",
+      "warningLevel": 1,
+      "filePath": "/home/dee100/Documents/Projects/ng-ecommerce-proj/server/ng-ecommerce-api.csproj",
+      "libraryId": "System.Security.Cryptography.Pkcs",
       "targetGraphs": [
         "net10.0"
       ]

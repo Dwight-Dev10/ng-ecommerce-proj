@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ng-ecommerce-api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e932215c196354885973daecb7f3cb88473c9f9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+03adacc045219437f7f2579190ae53c6d7d1076f")]
 [assembly: System.Reflection.AssemblyProductAttribute("ng-ecommerce-api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ng-ecommerce-api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
