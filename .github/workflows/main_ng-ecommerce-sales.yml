@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'Ng-ecommerce-sales'
           slot-name: 'Production'
-          package: .
+          package: ${{ env.DOTNET_ROOT }}/myapp
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9D351777E34C43F69EEBE812E02FA6A1 }}
