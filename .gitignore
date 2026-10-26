@@ -17,6 +17,9 @@ coverage/
 !.env.example
 appsettings.*.Local.json
 
+# Production
+environment.prod.ts
+
 # IDE and OS
 .idea/
 .DS_Store
