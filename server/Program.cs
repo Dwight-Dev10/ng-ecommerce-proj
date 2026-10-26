@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using ng_ecommerce_api.Data;
 using ng_ecommerce_api.Services;
@@ -45,6 +46,11 @@ if (app.Environment.IsDevelopment())
     });
     
 }
+// Configure Forwarded Headers Middleware
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 
 app.UseHttpsRedirection();
