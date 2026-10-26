@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("c74ca51d-5f7d-4a01-b9e3-f2a72635740f")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("ng-ecommerce-api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b6c597dbbe91cbc41e9f999e7d693a0cea46f5c4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f9da644816e27444f21a5864606aa684a236b139")]
 [assembly: System.Reflection.AssemblyProductAttribute("ng-ecommerce-api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ng-ecommerce-api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

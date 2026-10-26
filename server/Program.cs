@@ -15,7 +15,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Configuration.GetConnectionString("AzureSqlConnection")));
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 
@@ -29,7 +29,6 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
     });
 });
-
 
 builder.Services.AddControllers();
 var app = builder.Build();
