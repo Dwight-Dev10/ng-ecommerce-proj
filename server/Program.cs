@@ -20,7 +20,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 
-builder.Services.AddControllers();
 
 builder.Services.AddCors(options =>
 {
@@ -31,6 +30,8 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
     });
 });
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -66,7 +67,9 @@ app.UseRouting();
 
 app.UseCors("AngularEcommercePolicy");
 
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
