@@ -67,7 +67,6 @@ app.UseRouting();
 
 app.UseCors("AngularEcommercePolicy");
 
-app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
