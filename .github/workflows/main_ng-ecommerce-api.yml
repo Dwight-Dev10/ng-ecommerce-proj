@@ -1,56 +1,56 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - ng-ecommerce-api
+name: Build and deploy ASP.NET Core API to Azure Web App - ng-ecommerce-api
 
 on:
   push:
     branches:
-      - 'main'
+      - main
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up .NET Core
+      - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
 
-      - name: Build with dotnet
+      - name: Build API
         working-directory: ./server
         run: dotnet build --configuration Release
 
-      - name: dotnet publish
+      - name: Publish API
         working-directory: ./server
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish -c Release -o "${{ runner.temp }}/publish"
 
-      - name: Upload artifact for deployment job
+      - name: Upload published API
         uses: actions/upload-artifact@v4
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: net-app-binaries
+          path: ${{ runner.temp }}/publish
+          if-no-files-found: error
 
   deploy:
     runs-on: windows-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download published API
         uses: actions/download-artifact@v4
         with:
-          name: net-app
-          path: ./publish # Explicitly extract files out into a dedicated folder
-      
+          name: net-app-binaries
+          path: ./publish
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -58,12 +58,8 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_BC6D43C4A8D04EB489FB64583E521B81 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_09B5E4DCD05D44FDA78E29A4925F9E88 }}
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
+      - name: Deploy API to Azure
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'ng-ecommerce-api'
-          slot-name: 'Production'
           package: ./publish
-
-          
