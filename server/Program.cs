@@ -68,6 +68,8 @@ app.UseRouting();
 
 
 app.UseCors("AngularEcommercePolicy");
+Console.WriteLine(
+    $"CORS allowed origins: {string.Join(", ", allowedOrigins)}");
 
 app.UseAuthorization();
 app.MapControllers();
