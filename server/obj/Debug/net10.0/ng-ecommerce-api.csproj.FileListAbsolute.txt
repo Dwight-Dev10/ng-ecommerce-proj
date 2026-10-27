@@ -320,3 +320,7 @@
 /home/dee100/Documents/Projects/ng-ecommerce-proj/server/obj/Debug/net10.0/ng-ecommerce-api.pdb
 /home/dee100/Documents/Projects/ng-ecommerce-proj/server/obj/Debug/net10.0/ng-ecommerce-api.genruntimeconfig.cache
 /home/dee100/Documents/Projects/ng-ecommerce-proj/server/obj/Debug/net10.0/ref/ng-ecommerce-api.dll
+/home/dee100/Documents/Projects/ng-ecommerce-proj/server/bin/Debug/net10.0/Apache.Arrow.dll
+/home/dee100/Documents/Projects/ng-ecommerce-proj/server/bin/Debug/net10.0/Azure.Storage.Blobs.dll
+/home/dee100/Documents/Projects/ng-ecommerce-proj/server/bin/Debug/net10.0/Azure.Storage.Common.dll
+/home/dee100/Documents/Projects/ng-ecommerce-proj/server/bin/Debug/net10.0/System.IO.Hashing.dll

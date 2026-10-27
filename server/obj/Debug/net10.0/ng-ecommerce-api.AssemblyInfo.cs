@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ng-ecommerce-api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f9da644816e27444f21a5864606aa684a236b139")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7d2bc7a46612bc8806472026db058cc7f4b53feb")]
 [assembly: System.Reflection.AssemblyProductAttribute("ng-ecommerce-api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ng-ecommerce-api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
