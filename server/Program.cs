@@ -63,10 +63,13 @@ app.MapOpenApi();
 
 
 app.UseHttpsRedirection();
+app.UseRouting();
+
 
 
 app.UseCors("AngularEcommercePolicy");
 
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
