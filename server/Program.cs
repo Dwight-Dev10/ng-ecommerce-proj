@@ -20,8 +20,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 
-if (allowedOrigins.Length == 0)
-    throw new InvalidOperationException("Cors:AllowedOrigins is empty.");
+// if (allowedOrigins.Length == 0)
+//     throw new InvalidOperationException("Cors:AllowedOrigins is empty.");
 
 
 builder.Services.AddCors(options =>
