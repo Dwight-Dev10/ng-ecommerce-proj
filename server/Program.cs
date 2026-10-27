@@ -31,6 +31,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+Console.WriteLine(
+    $"!!!!!!CORS allowed origins: {string.Join(", ", allowedOrigins)}!?!?!?!?");
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -68,8 +71,6 @@ app.UseRouting();
 
 
 app.UseCors("AngularEcommercePolicy");
-Console.WriteLine(
-    $"CORS allowed origins: {string.Join(", ", allowedOrigins)}");
 
 // app.UseAuthorization();
 app.MapControllers();
