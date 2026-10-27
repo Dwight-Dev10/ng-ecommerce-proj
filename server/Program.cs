@@ -20,6 +20,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 
+if (allowedOrigins.Length == 0)
+    throw new InvalidOperationException("Cors:AllowedOrigins is empty.");
+
 
 builder.Services.AddCors(options =>
 {
@@ -37,6 +40,12 @@ Console.WriteLine(
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+// Configure Forwarded Headers Middleware
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
@@ -58,11 +67,6 @@ app.MapOpenApi();
         options.Theme = ScalarTheme.Saturn;
         
     });
-// Configure Forwarded Headers Middleware
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
 
 
 app.UseHttpsRedirection();
