@@ -20,6 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 
+builder.Services.AddControllers();
 
 builder.Services.AddCors(options =>
 {
@@ -31,21 +32,28 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+// if (app.Environment.IsDevelopment())
+// {
+//     app.MapOpenApi();
+//     app.MapScalarApiReference(options => 
+//     {
+//         options.Title = "Ecommerce APi";
+//         options.Theme = ScalarTheme.Saturn;
+        
+//     });
+    
+// }
+
+app.MapOpenApi();
     app.MapScalarApiReference(options => 
     {
         options.Title = "Ecommerce APi";
         options.Theme = ScalarTheme.Saturn;
         
     });
-    
-}
 // Configure Forwarded Headers Middleware
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
@@ -58,6 +66,5 @@ app.UseHttpsRedirection();
 app.UseCors("AngularEcommercePolicy");
 
 app.MapControllers();
-
 
 app.Run();
