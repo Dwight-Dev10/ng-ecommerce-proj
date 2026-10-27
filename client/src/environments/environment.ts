@@ -1,4 +1,5 @@
 export const environment = {
-    production: false,
-    apiUrl: ''
+    production: true,
+    apiUrl: 'https://ng-ecommerce-sales-fuczg4huajbvhecu.westus2-01.azurewebsites.net/api'
+
 };
