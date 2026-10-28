@@ -42,10 +42,10 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 // Configure Forwarded Headers Middleware
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
+// app.UseForwardedHeaders(new ForwardedHeadersOptions
+// {
+//     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+// });
 
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
