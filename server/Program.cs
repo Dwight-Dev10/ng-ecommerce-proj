@@ -18,25 +18,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("AzureSqlConnection")));
 
-// var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
-var allowedOrigins = (builder.Configuration
-        .GetSection("Cors:AllowedOrigins")
-        .Get<string[]>() ?? [])
-    .Where(o => !string.IsNullOrWhiteSpace(o))
-    .Select(o => o.TrimEnd('/'))
-    .ToArray();
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+// var allowedOrigins = (builder.Configuration
+//         .GetSection("Cors:AllowedOrigins")
+//         .Get<string[]>() ?? [])
+//     .Where(o => !string.IsNullOrWhiteSpace(o))
+//     .Select(o => o.TrimEnd('/'))
+//     .ToArray();
 
-var corsEnv = Environment.GetEnvironmentVariables()
-    .Cast<System.Collections.DictionaryEntry>()
-    .Where(e => e.Key.ToString()!.Contains("CORS", StringComparison.OrdinalIgnoreCase))
-    .Select(e => $"[{e.Key}]='{e.Value}'");
 
 if (allowedOrigins.Length == 0)
-    throw new InvalidOperationException(
-        $"Cors:AllowedOrigins is empty. Env: {string.Join(" | ", corsEnv)}. " +
-        $"Cfg0='{builder.Configuration["Cors:AllowedOrigins:0"]}'");
-// if (allowedOrigins.Length == 0)
-//     throw new InvalidOperationException("Cors:AllowedOrigins is empty.");
+    throw new InvalidOperationException("Cors:AllowedOrigins is empty.");
 
 builder.Services.AddCors(options =>
 {
@@ -56,11 +48,6 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure Forwarded Headers Middleware
-// app.UseForwardedHeaders(new ForwardedHeadersOptions
-// {
-//     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-// });
 
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
