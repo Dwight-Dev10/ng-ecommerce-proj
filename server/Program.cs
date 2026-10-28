@@ -26,11 +26,17 @@ var allowedOrigins = (builder.Configuration
     .Select(o => o.TrimEnd('/'))
     .ToArray();
 
+var corsEnv = Environment.GetEnvironmentVariables()
+    .Cast<System.Collections.DictionaryEntry>()
+    .Where(e => e.Key.ToString()!.Contains("CORS", StringComparison.OrdinalIgnoreCase))
+    .Select(e => $"[{e.Key}]='{e.Value}'");
+
 if (allowedOrigins.Length == 0)
-    throw new InvalidOperationException("Cors:AllowedOrigins is empty.");
+    throw new InvalidOperationException(
+        $"Cors:AllowedOrigins is empty. Env: {string.Join(" | ", corsEnv)}. " +
+        $"Cfg0='{builder.Configuration["Cors:AllowedOrigins:0"]}'");
 // if (allowedOrigins.Length == 0)
 //     throw new InvalidOperationException("Cors:AllowedOrigins is empty.");
-
 
 builder.Services.AddCors(options =>
 {
