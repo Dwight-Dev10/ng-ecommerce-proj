@@ -21,6 +21,7 @@ public class ProductService : IProductService
             Id = p.Id,
             Name = p.Name,
             Price = p.Price,
+            ImageUrl = p.ImageUrl,
             Category = p.Category,
             InStock = p.InStock
         }).ToListAsync();

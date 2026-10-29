@@ -1,4 +1,3 @@
-
 name: Build and deploy ASP.NET Core API to Azure Web App - ng-ecommerce-api
 
 on:
