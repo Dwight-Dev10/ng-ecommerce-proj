@@ -29,9 +29,8 @@ export class ProductService {
   }
 
   getSearchForProduct(searchTerm: string): Observable<Product[]>{
-    return this.http.get<Product[]>(`${this.apiUrl}/search=${searchTerm}`);
+    return this.http.get<Product[]>(`${this.apiUrl}/search/${searchTerm}`);
   }
-
   createProduct(product: Product): Observable<Product>{
     return this.http.post<Product>(this.apiUrl, product);
   }
