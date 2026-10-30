@@ -36,7 +36,7 @@ import { StarRating } from '../star-rating/star-rating';
       </div>
 
       <div class="flex items-center justify-between mt-auto">
-        <span class="text-2xl font-bold text-gray-900">\${{ product().price }}</span>
+        <span class="text-2xl font-bold text-gray-900"> \${{ product().price }} </span>
         <!--Button to add to cart, calls the store's addToCart method with the product as argument -->
         <button
           matButton="filled"

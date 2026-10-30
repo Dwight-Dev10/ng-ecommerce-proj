@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { Product } from '../../models/product';
 import { ProductCard } from '../../components/product-card/product-card';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
@@ -8,6 +8,7 @@ import { RouterLink } from '@angular/router';
 import { TitleCasePipe } from '@angular/common';
 import { EcommerceStore } from '../../ecommerce-store';
 import { ToggleWishlistButton } from '../../components/toggle-wishlist-button/toggle-wishlist-button';
+import { CategoryApi } from '../../services/category-api';
 // Products Data
 // catergory selected
 // Products filtered on catergory
@@ -33,7 +34,7 @@ import { ToggleWishlistButton } from '../../components/toggle-wishlist-button/to
           <h2 class="text-lg text-grey-900">Categories</h2>
 
           <mat-nav-list>
-            @for (cat of store.categories(); track cat) {
+            @for (cat of categories(); track cat) {
               <mat-list-item
                 [activated]="cat === category()"
                 class="my-2"
@@ -88,20 +89,26 @@ import { ToggleWishlistButton } from '../../components/toggle-wishlist-button/to
   styles: ``,
 })
 export default class ProductsGrid {
+  constructor() {
+    this.store.loadProducts();
+  }
+  categories = signal<string[]>(['All', 'Electronics', 'Home & Kitchen', 'Fitness', 'Accessories', 'Clothing', ]) ;
   category = input<string>('all'); // Read only input property for category
-
+  
+  store = inject(EcommerceStore);
+  
   addToCart(product: Product) {
     console.log('Adding to cart:', product);
   }
 
-  store = inject(EcommerceStore);
+  
+  filteredProducts = computed(() => {
+    if (this.category() === 'all') {
+      return this.store.products();
+    }
+      return this.store.products().filter((p) => p.category === this.category().toLocaleLowerCase());
+  });
+  
 
-  constructor() {
-    this.store.loadCategories();
-    this.store.loadProducts();
-
-    effect(() => {
-      this.store.setCategory(this.category());
-    });
-  }
+  
 }

@@ -8,11 +8,11 @@ export const serverRoutes: ServerRoute[] = [
   {
     path: 'products/:category',
     renderMode: RenderMode.Prerender,
-    getPrerenderParams: async () => {
-      const catService = inject(CategoryApi);
-      const names = await firstValueFrom(catService.getCategories())
-      return names.map((name) => ({ category: name.trim() }));
-    }
+    // getPrerenderParams: async () => {
+    //   const catService = inject(CategoryApi);
+    //   const names = await firstValueFrom(catService.categories())
+    //   return names.map((name) => ({ category: name.trim() }));
+    // }
   },
   {
     path: 'wishlist',

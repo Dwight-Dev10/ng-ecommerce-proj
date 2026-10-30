@@ -23,7 +23,7 @@ import { ProductService } from './services/ProductService';
 export type EcommerceState = {
   products: Product[];
   category: string; // List of categories
-  categories: string[]; // Currently selected category
+  // categories: string[]; // Currently selected category
   wishlistItems: Product[];
   cartItems: CartItem[];
   user: User | undefined;
@@ -47,9 +47,64 @@ export const EcommerceStore = signalStore(
     providedIn: 'root', //primary way to define a service in Angular that is available globally throughout your application
   },
   withState({
-    products: [],
+    products: [{
+      id: 'p1',
+    name: 'Wireless Bluetooth Headphones',
+    description: 'High-quality over-ear headphones with noise cancellation and 20-hour battery life.',
+    price: 129.99,
+    imageUrl: 'https://picsum.photos/seed/headphones/400/300',
+    rating: 4.5,
+    reviewCount: 342,
+    inStock: true,
+    category: 'Accessories',
+    reviews: [
+      {
+        id: 'r1-1',
+        productId: 'p1',
+        UserName: 'Ava M.',
+        userImageUrl: 'https://randomuser.me/api/portraits/women/45.jpg',
+        rating: 5,
+        title: 'Fantastic sound quality',
+        comment: 'These headphones are comfortable and the noise cancellation is amazing.',
+        reviewDate: new Date('2026-05-14')
+      },
+      {
+        id: 'r1-2',
+        productId: 'p1',
+        UserName: 'Noah S.',
+        userImageUrl: 'https://randomuser.me/api/portraits/men/65.jpg',
+        rating: 4,
+        title: 'Great value for the price',
+        comment: 'Battery life lasts all day and the audio is crisp.',
+        reviewDate: new Date('2026-04-09')
+      }
+    ]
+  },
+{
+    id: 'p11',
+    name: 'Wireless Charging Pad',
+    description: 'Fast wireless charger compatible with most smartphones.',
+    price: 19.99,
+    imageUrl: 'https://picsum.photos/seed/charger/400/300',
+    rating: 4.0,
+    reviewCount: 156,
+    inStock: true,
+    category: 'Electronics',
+    reviews: [
+      {
+        id: 'r11-1',
+        productId: 'p11',
+        UserName: 'Avery N.',
+        userImageUrl: 'https://randomuser.me/api/portraits/men/39.jpg',
+        rating: 4,
+        title: 'Convenient charging',
+        comment: 'Works well with my phone and charges quickly.',
+        reviewDate: new Date('2026-03-05')
+      }
+    ]
+  }],
     category: 'all',
-    categories: [],
+    // categories: [],
 
     wishlistItems: [],
     cartItems: [],
@@ -134,24 +189,21 @@ export const EcommerceStore = signalStore(
         });
       },
 
-      loadCategories: () => {
-        productService.getCategories().subscribe({
-          next: (categories) => {
-            patchState(store, { categories });
-          },
-          error: (err) => {
-            console.error('Unable to load categories', err);
-            toaster.error('Failed to load categories.');
-          },
-        });
-      },
+      // loadCategories: () => {
+      //   productService.getCategories().subscribe({
+      //     next: (categories) => {
+      //       patchState(store, { categories });
+      //     },
+      //     error: (err) => {
+      //       console.error('Unable to load categories', err);
+      //       toaster.error('Failed to load categories.');
+      //     },
+      //   });
+      // },
 
-      setCategory: (category: string) => {
-        patchState(store, {
-          category: category.trim().toLowerCase(),
-          
-        });
-      },
+      setCategory: signalMethod<string>((category: string) => {
+        patchState(store, {category});
+      }),
 
       
       setProductId: signalMethod<string>((productId: string) => {
