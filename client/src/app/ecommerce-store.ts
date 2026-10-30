@@ -189,17 +189,6 @@ export const EcommerceStore = signalStore(
         });
       },
 
-      // loadCategories: () => {
-      //   productService.getCategories().subscribe({
-      //     next: (categories) => {
-      //       patchState(store, { categories });
-      //     },
-      //     error: (err) => {
-      //       console.error('Unable to load categories', err);
-      //       toaster.error('Failed to load categories.');
-      //     },
-      //   });
-      // },
 
       setCategory: signalMethod<string>((category: string) => {
         patchState(store, {category});

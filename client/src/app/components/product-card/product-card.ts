@@ -58,7 +58,7 @@ export class ProductCard {
 
   store = inject(EcommerceStore); // Injecting the EcommerceStore to access state and actions
 
-  constructor() {
-    this.store.loadProducts();
-  }
+  // constructor() {
+  //   // this.store.loadProducts();
+  // }
 }

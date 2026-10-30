@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { Product } from '../../models/product';
 import { ProductCard } from '../../components/product-card/product-card';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
@@ -8,7 +8,6 @@ import { RouterLink } from '@angular/router';
 import { TitleCasePipe } from '@angular/common';
 import { EcommerceStore } from '../../ecommerce-store';
 import { ToggleWishlistButton } from '../../components/toggle-wishlist-button/toggle-wishlist-button';
-import { CategoryApi } from '../../services/category-api';
 // Products Data
 // catergory selected
 // Products filtered on catergory
@@ -91,8 +90,11 @@ import { CategoryApi } from '../../services/category-api';
 export default class ProductsGrid {
   constructor() {
     this.store.loadProducts();
+    effect(() => {
+      this.store.setCategory(this.category().trim().toLowerCase());
+    });
   }
-  categories = signal<string[]>(['All', 'Electronics', 'Home & Kitchen', 'Fitness', 'Accessories', 'Clothing', ]) ;
+  categories = signal<string[]>(['All', 'Electronics', 'Home & Kitchen', 'Fitness', 'Accessories', 'Clothing', ]);
   category = input<string>('all'); // Read only input property for category
   
   store = inject(EcommerceStore);
@@ -100,15 +102,5 @@ export default class ProductsGrid {
   addToCart(product: Product) {
     console.log('Adding to cart:', product);
   }
-
-  
-  filteredProducts = computed(() => {
-    if (this.category() === 'all') {
-      return this.store.products();
-    }
-      return this.store.products().filter((p) => p.category === this.category().toLocaleLowerCase());
-  });
-  
-
   
 }
