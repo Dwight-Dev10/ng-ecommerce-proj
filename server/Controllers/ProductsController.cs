@@ -50,7 +50,7 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
-    [HttpGet("search")]
+    [HttpGet("search/{name}")]
     public async Task<IActionResult> SearchProducts(string name)
     {
         var products = await _productService.GetProductByName(name);
