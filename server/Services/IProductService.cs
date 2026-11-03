@@ -8,7 +8,7 @@ public interface IProductService
 
     Task<ProductDto?> GetProductById(Guid id);
     Task<ProductDto?> GetProductByName(string name);
-    Task<IEnumerable<ProductDto>> SearchProductsByName(string name);
+    Task<IEnumerable<ProductDto>> SearchForProducts(string name);
     Task<IEnumerable<ProductDto>> GetProductByCategory(string category);
     
     Task<ProductDto> CreateProduct(CreateProductDto dto);

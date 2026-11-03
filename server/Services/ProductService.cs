@@ -40,10 +40,10 @@ public class ProductService : IProductService
             }).FirstOrDefaultAsync();
     }
     
-    public async Task<IEnumerable<ProductDto>> SearchProductsByName(string name)
+    public async Task<IEnumerable<ProductDto>> SearchForProducts(string name)
     {
         return await _context.Products
-            .Where(p => p.Name.Contains(name))
+            .Where(p => p.Name.ToLower().Contains(name.ToLower()))
             .Select(p => new ProductDto
             {
                 Id = p.Id,
