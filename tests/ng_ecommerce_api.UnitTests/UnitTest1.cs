@@ -1,4 +1,4 @@
-﻿namespace NgEcommerceApi.UnitTests;
+﻿namespace ng_ecommerce_api.UnitTests;
 
 public class UnitTest1
 {
