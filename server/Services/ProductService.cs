@@ -108,7 +108,8 @@ public class ProductService : IProductService
             Id = product.Id,
             Name = product.Name,
             Price = product.Price,
-            // Description = product.Description,
+            ImageUrl = dto.ImageUrl,
+            Description = product.Description,
             Category = product.Category,
             InStock = product.InStock
         };
