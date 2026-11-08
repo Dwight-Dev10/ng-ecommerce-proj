@@ -116,16 +116,7 @@ public class ProductsControllerTests
     [Fact]
     public async Task GetProductById_WhenProductDoesNotExist_ReturnsNotFound()
     {
-        // var product = new ProductDto
-        // {
-        //     Id = Guid.NewGuid(),
-        //     Name = "Product 1",
-        //     Description = "Description 1",
-        //     Price = 10.0m,
-        //     Category = "Category 1",
-        //     ImageUrl = "http://example.com/image1.jpg",
-        //     InStock = true
-        // };
+
         _mockProductService.Setup(r => r.GetProductById(It.IsAny<Guid>())).ReturnsAsync((ProductDto?)null);
 
         var result = await _sut.GetProductById(Guid.NewGuid());
@@ -133,7 +124,7 @@ public class ProductsControllerTests
         var notFoundResult = Assert.IsType<NotFoundResult>(result);
 
         Assert.Equal(404, notFoundResult.StatusCode);
-
+    
         _mockProductService.Verify(
             r => r.GetProductById(It.IsAny<Guid>()),
             Times.Once
@@ -141,5 +132,59 @@ public class ProductsControllerTests
     }
 
     //GetProductsByName
+    [Fact]
+    public async Task GetProductsByName_WhenProductExists_ReturnsOk()
+    {
+        // Arrange
+        var product = new ProductDto
+        {
+            Id = Guid.NewGuid(),
+            Name = "Product 1",
+            Description = "Description 1",
+            Price = 10.0m,
+            Category = "Category 1",
+            ImageUrl = "http://example.com/image1.jpg",
+            InStock = true
+        };
+
+        _mockProductService.Setup(r => r.GetProductByName(product.Name)).ReturnsAsync(product);
+
+        var result = await _sut.GetProductsByName(product.Name);
+
+        // verifies HTTP 200
+        var okResult = Assert.IsType<OkObjectResult>(result);
+
+        // verify that the correct product was returned.
+        var returnedProduct = Assert.IsType<ProductDto>(okResult.Value);
+
+        Assert.Equal(product.Id, returnedProduct.Id);
+        Assert.Equal(product.Name, returnedProduct.Name);
+        Assert.Equal(product.Price, returnedProduct.Price);
+
+        // verify that the service was called exactly once
+        _mockProductService.Verify(
+            r => r.GetProductByName(product.Name),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task GetProductsByName_WhenProductDoesNotExist_ReturnsNotFound()
+    {
+        _mockProductService.Setup(r => r.GetProductByName(It.IsAny<string>())).ReturnsAsync((ProductDto?)null);
+
+        var result = await _sut.GetProductsByName("NonExistentProduct");
+
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+
+        Assert.Equal("No products found with name: NonExistentProduct",
+            notFoundResult.Value
+        );
+    
+        _mockProductService.Verify(
+            r => r.GetProductByName(It.IsAny<string>()),
+            Times.Once
+        );
+    }
 
 }
