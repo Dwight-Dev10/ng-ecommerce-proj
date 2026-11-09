@@ -257,7 +257,83 @@ public class ProductsControllerTests
         Assert.Empty(returnedProducts);
 
     }
-    // GetProductsByCategory
+
+    [Fact]
+    public async Task GetProductsByCategory_WhenProductsExist_ReturnsOk()
+    {
+        var products = new List<ProductDto>
+        {
+            new ProductDto
+            {
+                Id = Guid.NewGuid(),
+                Name = "Game Console",
+                Description = "Description 1",
+                Price = 10.0m,
+                Category = "Home & Kitchen",
+                ImageUrl = "http://example.com/image1.jpg",
+                InStock = true
+            },
+            new ProductDto
+            {
+                Id = Guid.NewGuid(),
+                Name = "Game console",
+                Description = "Electronics",
+                Price = 20.0m,
+                Category = "Electronics",
+                ImageUrl = "http://example.com/image2.jpg",
+                InStock = false
+            },
+            new ProductDto
+            {
+                Id = Guid.NewGuid(),
+                Name = "Car",
+                Description = "I am number 3",
+                Price = 30.0m,
+                Category = "Electronics",
+                ImageUrl = "http://example.com/image2.jpg",
+                InStock = true
+        }};
+
+        _mockProductService.Setup(r => r.GetProductByCategory("Electronics")).ReturnsAsync(products.Where(p => p.Category.Contains("Electronics")));
+
+        var result = await _sut.GetProductsByCategory("Electronics");
+
+        // var okResult = Assert.IsAssignableFrom<OkObjectResult>(result);
+        var okResult = Assert.IsType<OkObjectResult>(result);
+
+
+        var returnedProducts = Assert.IsAssignableFrom<IEnumerable<ProductDto>>(okResult.Value).ToList();
+
+        _mockProductService.Verify(
+            r => r.GetProductByCategory("Electronics"),
+            Times.Once
+        );     
+
+        Assert.Equal(2, returnedProducts.Count);
+        Assert.All(returnedProducts, p =>
+            Assert.Equal("Electronics", p.Category));
+        
+        Assert.Contains(returnedProducts, p => p.Name == "Game console");
+        Assert.Contains(returnedProducts, p => p.Name == "Car");
+    }
+    [Fact]
+    public async Task GetProductsByCategory_WhenNoProductsExist_ReturnsNotFound()
+    {
+        _mockProductService.Setup(r => r.GetProductByCategory("Electronics")).ReturnsAsync(new List<ProductDto>());
+
+        var result = await _sut.GetProductsByCategory("Electronics");
+
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+
+
+        _mockProductService.Verify(
+            r => r.GetProductByCategory("Electronics"),
+            Times.Once
+        );     
+
+        Assert.Equal("No products found in category: Electronics", notFoundResult.Value);
+    }
+    
     // CreateProduct
     // UpdateProduct
     // DeleteProduct
