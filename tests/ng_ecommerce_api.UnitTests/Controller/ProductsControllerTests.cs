@@ -187,4 +187,79 @@ public class ProductsControllerTests
         );
     }
 
+    [Fact]
+    public async Task SearchProducts_WhenMatchingProductsExist_ReturnsOkWithProducts()
+    {
+        var products = new List<ProductDto>
+        {
+            new ProductDto
+            {
+                Id = Guid.NewGuid(),
+                Name = "Game Console",
+                Description = "Description 1",
+                Price = 10.0m,
+                Category = "Category 1",
+                ImageUrl = "http://example.com/image1.jpg",
+                InStock = true
+            },
+            new ProductDto
+            {
+                Id = Guid.NewGuid(),
+                Name = "Game chair",
+                Description = "Description 2",
+                Price = 20.0m,
+                Category = "Category 2",
+                ImageUrl = "http://example.com/image2.jpg",
+                InStock = false
+            },
+            new ProductDto
+            {
+                Id = Guid.NewGuid(),
+                Name = "Car",
+                Description = "I am number 3",
+                Price = 30.0m,
+                Category = "Category 3",
+                ImageUrl = "http://example.com/image2.jpg",
+                InStock = true
+        }};
+
+        _mockProductService.Setup(r => r.SearchForProducts("Game")).ReturnsAsync(products.Where(p => p.Name.Contains("Game")));
+
+        var result = await _sut.SearchProducts("Game");
+
+        var okResult = Assert.IsAssignableFrom<OkObjectResult>(result);
+
+        var returnedProducts = Assert.IsAssignableFrom<IEnumerable<ProductDto>>(okResult.Value).ToList();
+        _mockProductService.Verify(
+            r => r.SearchForProducts("Game"),
+            Times.Once
+        );
+        Assert.Equal(2, returnedProducts.Count);
+        Assert.Contains(returnedProducts, p => p.Name == "Game Console");
+        Assert.Contains(returnedProducts, p => p.Name == "Game chair");
+    }
+
+    [Fact]
+    public async Task SearchProducts_WhenNoMatchingProductsExist_ReturnsOkWithEmptyCollection()
+    {
+        _mockProductService.Setup(r => r.SearchForProducts("Lamp")).ReturnsAsync(new List<ProductDto>());
+
+        var result = await _sut.SearchProducts("Lamp");
+
+        var okResult = Assert.IsAssignableFrom<OkObjectResult>(result);
+
+        var returnedProducts = Assert.IsAssignableFrom<IEnumerable<ProductDto>>(okResult.Value).ToList();
+
+        _mockProductService.Verify(
+            r => r.SearchForProducts("Lamp"),
+            Times.Once
+        );     
+        Assert.Empty(returnedProducts);
+
+    }
+    // GetProductsByCategory
+    // CreateProduct
+    // UpdateProduct
+    // DeleteProduct
+
 }
