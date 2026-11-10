@@ -266,16 +266,6 @@ public class ProductsControllerTests
             new ProductDto
             {
                 Id = Guid.NewGuid(),
-                Name = "Game Console",
-                Description = "Description 1",
-                Price = 10.0m,
-                Category = "Home & Kitchen",
-                ImageUrl = "http://example.com/image1.jpg",
-                InStock = true
-            },
-            new ProductDto
-            {
-                Id = Guid.NewGuid(),
                 Name = "Game console",
                 Description = "Electronics",
                 Price = 20.0m,
@@ -294,7 +284,7 @@ public class ProductsControllerTests
                 InStock = true
         }};
 
-        _mockProductService.Setup(r => r.GetProductByCategory("Electronics")).ReturnsAsync(products.Where(p => p.Category.Contains("Electronics")));
+        _mockProductService.Setup(r => r.GetProductByCategory("Electronics")).ReturnsAsync(products);
 
         var result = await _sut.GetProductsByCategory("Electronics");
 
