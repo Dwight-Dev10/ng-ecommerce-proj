@@ -333,8 +333,92 @@ public class ProductsControllerTests
 
         Assert.Equal("No products found in category: Electronics", notFoundResult.Value);
     }
-    
-    // CreateProduct
+
+    [Fact]
+    public async Task CreateProduct_WhenValidProduct_ReturnsCreatedAtAction()
+    {
+        var createProductDto = new CreateProductDto
+        {
+            Name = "New Product",
+            Description = "New Product Description Added",
+            Price = 79.99m,
+            Category = "Home & Kitchen",
+            ImageUrl = "http://example.com/newproduct.jpg",
+        };
+
+        var createdProduct = new ProductDto
+        {
+            Id = Guid.NewGuid(),
+            Name = createProductDto.Name,
+            Description = createProductDto.Description,
+            Price = createProductDto.Price,
+            ImageUrl = createProductDto.ImageUrl,
+            Category = createProductDto.Category,
+            InStock = true
+        };
+
+        _mockProductService
+            .Setup(r => r.CreateProduct(createProductDto))
+            .ReturnsAsync(createdProduct);
+
+        // Act
+        var result = await _sut.CreateProduct(createProductDto);
+
+
+        // Assert
+        var createdResult = Assert.IsType<CreatedAtActionResult>(result);
+
+        Assert.Equal(nameof(_sut.GetProductById), createdResult.ActionName);
+        Assert.Equal(createdProduct.Id, createdResult.RouteValues["id"]);
+
+        var returnedProduct = Assert.IsType<ProductDto>(createdResult.Value);
+
+        _mockProductService.Verify(
+            r => r.CreateProduct(createProductDto),
+            Times.Once
+        );
+
+        Assert.Equal(createdProduct.Id, returnedProduct.Id);
+        Assert.Equal(createdProduct.Name, returnedProduct.Name);
+        Assert.Equal(createdProduct.Price, returnedProduct.Price);
+        Assert.Equal(createdProduct.Description, returnedProduct.Description);
+        Assert.Equal(createdProduct.Category, returnedProduct.Category);
+        Assert.Equal(createdProduct.ImageUrl, returnedProduct.ImageUrl);
+        Assert.Equal(createdProduct.InStock, returnedProduct.InStock);
+    }
+
+    [Fact]
+
+    public async Task UpdateProduct_WhenProductExists_ReturnsNoContent()
+    {
+        var productId = Guid.NewGuid();
+        var updateProductDto = new UpdateProductDto
+        {
+            Name = "Updated Product",
+            Description = "Updated Product Description",
+            Price = 99.99m,
+            Category = "Electronics",
+            ImageUrl = "http://example.com/updatedproduct.jpg",
+            InStock = true
+        };
+
+        _mockProductService.Setup(r => r.UpdateProduct(productId, updateProductDto)).ReturnsAsync(true);
+
+        var result = await _sut.UpdateProduct(productId, updateProductDto);
+
+        Assert.IsType<NoContentResult>(result);
+
+        _mockProductService.Verify(
+            r => r.UpdateProduct(productId, updateProductDto),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task UpdateProduct_WhenProductDoesNotExist_ReturnsNotFound()
+    {
+        
+    }
     // UpdateProduct
     // DeleteProduct
 
