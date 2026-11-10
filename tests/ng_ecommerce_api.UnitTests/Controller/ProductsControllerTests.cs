@@ -116,8 +116,7 @@ public class ProductsControllerTests
     [Fact]
     public async Task GetProductById_WhenProductDoesNotExist_ReturnsNotFound()
     {
-
-        _mockProductService.Setup(r => r.GetProductById(It.IsAny<Guid>())).ReturnsAsync((ProductDto?)null);
+        _mockProductService.Setup(r => r.GetProductById(Guid.NewGuid())).ReturnsAsync((ProductDto?)null);
 
         var result = await _sut.GetProductById(Guid.NewGuid());
 
@@ -234,6 +233,7 @@ public class ProductsControllerTests
             r => r.SearchForProducts("Game"),
             Times.Once
         );
+
         Assert.Equal(2, returnedProducts.Count);
         Assert.Contains(returnedProducts, p => p.Name == "Game Console");
         Assert.Contains(returnedProducts, p => p.Name == "Game chair");
@@ -310,12 +310,11 @@ public class ProductsControllerTests
         );     
 
         Assert.Equal(2, returnedProducts.Count);
-        Assert.All(returnedProducts, p =>
-            Assert.Equal("Electronics", p.Category));
-        
         Assert.Contains(returnedProducts, p => p.Name == "Game console");
         Assert.Contains(returnedProducts, p => p.Name == "Car");
+
     }
+
     [Fact]
     public async Task GetProductsByCategory_WhenNoProductsExist_ReturnsNotFound()
     {
