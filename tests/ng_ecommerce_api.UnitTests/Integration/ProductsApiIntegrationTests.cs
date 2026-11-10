@@ -1,6 +1,8 @@
 using System;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ng_ecommerce_api.Data;
@@ -11,22 +13,27 @@ using ng_ecommerce_api.Models;
 
 namespace ng_ecommerce_api.UnitTests.Integration;
 
-public class ProductsApiIntegrationTests :IClassFixture<CustomWebApplicationFactory>
+public class ProductsApiIntegrationTests : IDisposable
 {
     private readonly HttpClient _client;
 
     private readonly CustomWebApplicationFactory _factory;
+
+    public void Dispose()
+    {
+        _client?.Dispose();
+        _factory?.Dispose();
+    }
     
     // Initialize the database
-    public ProductsApiIntegrationTests(
-        CustomWebApplicationFactory factory)
+    public ProductsApiIntegrationTests()
     {
-        _factory = factory;
+        _factory = new CustomWebApplicationFactory();
         // Create an HTTP client connected to our test API.
-        _client = factory.CreateClient();
+        _client = _factory.CreateClient();
 
         // Get access to the test database.
-        using var scope = factory.Services.CreateScope();
+        using var scope = _factory.Services.CreateScope();
 
         var db = scope.ServiceProvider
             .GetRequiredService<AppDbContext>();
@@ -271,8 +278,154 @@ public class ProductsApiIntegrationTests :IClassFixture<CustomWebApplicationFact
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
+    [Fact]
+    public async Task CreateProduct_WithInvalidPrice_ReturnsBadRequest()
+    {
+        // Arrange
+        var createProductDto = new CreateProductDto
+        {
+            Name = "Gaming Mouse",
+            Description = "A gaming mouse",
+            Price = -50m,
+            ImageUrl = "mouse.jpg",
+            Category = "Electronics"
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync(
+            "/api/products",
+            createProductDto);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var errorResponse = await response.Content
+            .ReadFromJsonAsync<ValidationProblemDetails>();
+
+        Assert.NotNull(errorResponse);
+        Assert.Contains("Price", errorResponse.Errors.Keys);
+
+        using var scope = _factory.Services.CreateScope();
+
+        // Verify invalid requests don't reach the database
+        var db = scope.ServiceProvider
+            .GetRequiredService<AppDbContext>();
+
+        var savedProduct = await db.Products
+            .FirstOrDefaultAsync(p => p.Name == createProductDto.Name);
+
+        Assert.Null(savedProduct);
+
+    }
 
 
+    [Fact]
+    public async Task CreateProduct_WithMissingName_ReturnsBadRequest()
+    {
+        // Arrange
+        var createProductDto = new CreateProductDto
+        {
+            Name = "",
+            Description = "A gaming mouse",
+            Price = 79.99m,
+            ImageUrl = "mouse.jpg",
+            Category = "Electronics"
+        };
 
+        // Act
+        var response = await _client.PostAsJsonAsync(
+            "/api/products",
+            createProductDto);
 
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var errorResponse = await response.Content
+            .ReadFromJsonAsync<ValidationProblemDetails>();
+
+        Assert.NotNull(errorResponse);
+        Assert.Contains("Name", errorResponse.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task CreateProduct_WithNameExceedingMaxLength_ReturnsBadRequest()
+    {
+        // Arrange
+        var createProductDto = new CreateProductDto
+        {
+            Name = new string('A', 101),
+            Description = "A gaming mouse",
+            Price = 79.99m,
+            ImageUrl = "mouse.jpg",
+            Category = "Electronics"
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync(
+            "/api/products",
+            createProductDto);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var errorResponse = await response.Content
+            .ReadFromJsonAsync<ValidationProblemDetails>();
+
+        Assert.NotNull(errorResponse);
+        Assert.Contains("Name", errorResponse.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task CreateProduct_WithDescriptionExceedingMaxLength_ReturnsBadRequest()
+    {
+        // Arrange
+        var createProductDto = new CreateProductDto
+        {
+            Name = "Gaming Mouse",
+            Description = new string('D', 501),
+            Price = 79.99m,
+            ImageUrl = "mouse.jpg",
+            Category = "Electronics"
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync(
+            "/api/products",
+            createProductDto);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var errorResponse = await response.Content
+            .ReadFromJsonAsync<ValidationProblemDetails>();
+
+        Assert.NotNull(errorResponse);
+        Assert.Contains("Description", errorResponse.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task CreateProduct_WithMalformedJson_ReturnsBadRequest()
+    {
+        // Arrange
+        var content = new StringContent(
+            "{ \"name\": \"Gaming Mouse\", \"price\": }",
+            Encoding.UTF8,
+            "application/json");
+
+        // Act
+        var response = await _client.PostAsync("/api/products", content);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SearchProducts_WhenMatchesExist_ReturnsMatchingProducts()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+    }
 }
