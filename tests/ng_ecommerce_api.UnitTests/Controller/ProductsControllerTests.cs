@@ -417,9 +417,59 @@ public class ProductsControllerTests
     [Fact]
     public async Task UpdateProduct_WhenProductDoesNotExist_ReturnsNotFound()
     {
-        
+        _mockProductService.Setup(r => r.UpdateProduct(It.IsAny<Guid>(), It.IsAny<UpdateProductDto>())).ReturnsAsync(false);
+
+        var result = await _sut.UpdateProduct(Guid.NewGuid(), new UpdateProductDto());
+
+        Assert.IsType<NotFoundResult>(result);
+
+        _mockProductService.Verify(
+            r => r.UpdateProduct(
+                It.IsAny<Guid>(),
+                It.IsAny<UpdateProductDto>()),
+            Times.Once
+        );
     }
-    // UpdateProduct
-    // DeleteProduct
+
+    [Fact]
+    public async Task DeleteProduct_WhenProductExists_ReturnsNoContent()
+    {
+        var productId = Guid.NewGuid();
+        var product = new ProductDto
+        {
+            Id = productId,
+            Name = "Product to Delete",
+            Description = "Description of the product to delete",
+            Price = 49.99m,
+            Category = "Electronics",
+            ImageUrl = "http://example.com/producttodelete.jpg",
+            InStock = true
+        };
+
+        _mockProductService.Setup(r => r.DeleteProduct(productId)).ReturnsAsync(true);
+
+        var result = await _sut.DeleteProduct(productId);
+
+        Assert.IsType<NoContentResult>(result);
+
+        _mockProductService.Verify(
+            r => r.DeleteProduct(productId),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task DeleteProduct_WhenProductDoesNotExist_ReturnsNotFound()
+    {
+        _mockProductService.Setup( r => r.DeleteProduct(It.IsAny<Guid>())).ReturnsAsync(false);
+
+        var result = await _sut.DeleteProduct(Guid.NewGuid());
+        Assert.IsType<NotFoundResult>(result);
+
+        _mockProductService.Verify(
+            r => r.DeleteProduct(It.IsAny<Guid>()),
+            Times.Once
+        );
+    }
 
 }
