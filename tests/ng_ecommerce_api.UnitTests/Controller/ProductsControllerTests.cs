@@ -435,17 +435,7 @@ public class ProductsControllerTests
     public async Task DeleteProduct_WhenProductExists_ReturnsNoContent()
     {
         var productId = Guid.NewGuid();
-        var product = new ProductDto
-        {
-            Id = productId,
-            Name = "Product to Delete",
-            Description = "Description of the product to delete",
-            Price = 49.99m,
-            Category = "Electronics",
-            ImageUrl = "http://example.com/producttodelete.jpg",
-            InStock = true
-        };
-
+        
         _mockProductService.Setup(r => r.DeleteProduct(productId)).ReturnsAsync(true);
 
         var result = await _sut.DeleteProduct(productId);
