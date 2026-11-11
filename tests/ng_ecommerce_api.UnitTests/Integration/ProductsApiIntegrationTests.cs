@@ -148,13 +148,21 @@ public class ProductsApiIntegrationTests : IDisposable
             "/api/products",
             createProductDto);
 
-        // Assert
+        // Assert - HTTP Response
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location);
 
         var createdProduct = await response.Content
             .ReadFromJsonAsync<ProductDto>();
 
+        Assert.NotNull(createdProduct);
+        Assert.NotEqual(Guid.Empty, createdProduct.Id);
+        Assert.Equal(createProductDto.Name, createdProduct.Name);
+        Assert.Equal(createProductDto.Price, createdProduct.Price);
+        Assert.Equal(createProductDto.Category, createdProduct.Category);
+
+
+        // Assert - Database Persistence
         using var scope = _factory.Services.CreateScope();
 
         var db = scope.ServiceProvider
@@ -164,14 +172,11 @@ public class ProductsApiIntegrationTests : IDisposable
             .FirstOrDefaultAsync(p => p.Id == createdProduct.Id);
 
         Assert.NotNull(savedProduct);
-        Assert.Equal("Integration Gaming Mouse", savedProduct.Name);
-        Assert.Equal(79.99m, savedProduct.Price);
-
-        Assert.NotNull(createdProduct);
-        Assert.NotEqual(Guid.Empty, createdProduct.Id);
-        Assert.Equal(createProductDto.Name, createdProduct.Name);
-        Assert.Equal(createProductDto.Price, createdProduct.Price);
-        Assert.Equal(createProductDto.Category, createdProduct.Category);
+        Assert.Equal(createProductDto.Name, savedProduct.Name);
+        Assert.Equal(createProductDto.Price, savedProduct.Price);
+        Assert.Equal(createProductDto.Description, savedProduct.Description);
+        Assert.Equal(createProductDto.ImageUrl, savedProduct.ImageUrl);
+        Assert.Equal(createProductDto.Category, savedProduct.Category);
     }
 
     [Fact]

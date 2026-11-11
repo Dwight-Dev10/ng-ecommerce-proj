@@ -116,16 +116,17 @@ public class ProductsControllerTests
     [Fact]
     public async Task GetProductById_WhenProductDoesNotExist_ReturnsNotFound()
     {
-        _mockProductService.Setup(r => r.GetProductById(Guid.NewGuid())).ReturnsAsync((ProductDto?)null);
+        var productId = Guid.NewGuid();
+        _mockProductService.Setup(r => r.GetProductById(productId)).ReturnsAsync((ProductDto?)null);
 
-        var result = await _sut.GetProductById(Guid.NewGuid());
+        var result = await _sut.GetProductById(productId);
 
         var notFoundResult = Assert.IsType<NotFoundResult>(result);
 
         Assert.Equal(404, notFoundResult.StatusCode);
     
         _mockProductService.Verify(
-            r => r.GetProductById(It.IsAny<Guid>()),
+            r => r.GetProductById(productId),
             Times.Once
         );
     }
@@ -406,16 +407,18 @@ public class ProductsControllerTests
     [Fact]
     public async Task UpdateProduct_WhenProductDoesNotExist_ReturnsNotFound()
     {
-        _mockProductService.Setup(r => r.UpdateProduct(It.IsAny<Guid>(), It.IsAny<UpdateProductDto>())).ReturnsAsync(false);
+        var productId = Guid.NewGuid();
+        var updateDto = new UpdateProductDto();
 
-        var result = await _sut.UpdateProduct(Guid.NewGuid(), new UpdateProductDto());
+        _mockProductService.Setup(r => r.UpdateProduct(productId, updateDto)).ReturnsAsync(false);
+
+        var result = await _sut.UpdateProduct(productId, updateDto);
 
         Assert.IsType<NotFoundResult>(result);
 
         _mockProductService.Verify(
             r => r.UpdateProduct(
-                It.IsAny<Guid>(),
-                It.IsAny<UpdateProductDto>()),
+                productId, updateDto),
             Times.Once
         );
     }
@@ -440,9 +443,10 @@ public class ProductsControllerTests
     [Fact]
     public async Task DeleteProduct_WhenProductDoesNotExist_ReturnsNotFound()
     {
-        _mockProductService.Setup( r => r.DeleteProduct(It.IsAny<Guid>())).ReturnsAsync(false);
+        var productId = Guid.NewGuid();
+        _mockProductService.Setup( r => r.DeleteProduct(productId)).ReturnsAsync(false);
 
-        var result = await _sut.DeleteProduct(Guid.NewGuid());
+        var result = await _sut.DeleteProduct(productId);
         Assert.IsType<NotFoundResult>(result);
 
         _mockProductService.Verify(
