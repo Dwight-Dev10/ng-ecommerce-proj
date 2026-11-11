@@ -450,7 +450,7 @@ public class ProductsControllerTests
         Assert.IsType<NotFoundResult>(result);
 
         _mockProductService.Verify(
-            r => r.DeleteProduct(It.IsAny<Guid>()),
+            r => r.DeleteProduct(productId),
             Times.Once
         );
     }
