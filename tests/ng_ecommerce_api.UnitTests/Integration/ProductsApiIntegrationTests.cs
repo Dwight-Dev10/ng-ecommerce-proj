@@ -150,6 +150,7 @@ public class ProductsApiIntegrationTests : IDisposable
 
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.NotNull(response.Headers.Location);
 
         var createdProduct = await response.Content
             .ReadFromJsonAsync<ProductDto>();
@@ -423,9 +424,136 @@ public class ProductsApiIntegrationTests : IDisposable
     public async Task SearchProducts_WhenMatchesExist_ReturnsMatchingProducts()
     {
         // Arrange
+        using var scope = _factory.Services.CreateScope();
+
+        var db = scope.ServiceProvider
+            .GetRequiredService<AppDbContext>();
+
+        var newProducts = new List<Product>
+        {
+            new Product
+            {
+                Name = "Gaming Mouse",
+                Description = "A gaming mouse",
+                Price = 79.99m,
+                ImageUrl = "mouse.jpg",
+                Category = "Electronics"
+            },
+            new Product
+            {
+                Name = "Gaming Keyboard",
+                Description = "A gaming keyboard",
+                Price = 129.99m,
+                ImageUrl = "keyboard.jpg",
+                Category = "Electronics"
+            },
+            new Product
+            {
+                Name = "Zebra Chair",
+                Description = "An ergonomic office chair",
+                Price = 199.99m,
+                ImageUrl = "chair.jpg",
+                Category = "Furniture"
+            }
+        };
+        
+        db.Products.RemoveRange(db.Products);
+        await db.SaveChangesAsync();    
+
+        db.Products.AddRange(newProducts);
+        await db.SaveChangesAsync();
 
         // Act
+        var response = await _client.GetAsync("/api/products/search/Gaming");
 
         // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var products = await response.Content.ReadFromJsonAsync<List<ProductDto>>();
+        Assert.NotNull(products);
+        Assert.Equal(2, products.Count);
+        Assert.All(products, product =>
+        {
+            Assert.Contains("Gaming", product.Name);
+        });
+    }
+
+    [Fact]
+    public async Task GetProductsByCategory_WhenProductsExist_ReturnsMatchingProducts()
+    {
+        // Arrange
+        using var scope = _factory.Services.CreateScope();
+
+        var db = scope.ServiceProvider
+            .GetRequiredService<AppDbContext>();
+
+        var newProducts = new List<Product>
+        {
+            new Product
+            {
+                Name = "Lamp",
+                Description = "A stylish lamp",
+                Price = 79.99m,
+                ImageUrl = "lamp.jpg",
+                Category = "Furniture"
+            },
+            new Product
+            {
+                Name = "Gaming Keyboard",
+                Description = "A gaming keyboard",
+                Price = 129.99m,
+                ImageUrl = "keyboard.jpg",
+                Category = "Electronics"
+            },
+            new Product
+            {
+                Name = "Zebra Couch",
+                Description = "An ergonomic living room couch",
+                Price = 199.99m,
+                ImageUrl = "couch.jpg",
+                Category = "Furniture"
+            }
+        };
+        
+        db.Products.RemoveRange(db.Products);
+        await db.SaveChangesAsync();    
+
+        db.Products.AddRange(newProducts);
+        await db.SaveChangesAsync();
+
+
+        // Act
+        var response = await _client.GetAsync("/api/products/category/Furniture");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var products = await response.Content.ReadFromJsonAsync<List<ProductDto>>();
+        Assert.NotNull(products);
+        Assert.Equal(2, products.Count);
+        Assert.All(products, product =>
+        {
+            Assert.Equal("Furniture", product.Category);
+        });
+    }
+
+    [Fact]
+    public async Task GetProductsByCategory_WhenNoProductsExist_ReturnsNotFound()
+    {
+        // Arrange
+        using var scope = _factory.Services.CreateScope();
+
+        var db = scope.ServiceProvider
+            .GetRequiredService<AppDbContext>();
+
+        db.Products.RemoveRange(db.Products);
+        await db.SaveChangesAsync();    
+
+
+        // Act
+        var response = await _client.GetAsync("/api/products/category/NonExistentCategory");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 }

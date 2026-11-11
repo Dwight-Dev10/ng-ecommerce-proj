@@ -337,7 +337,7 @@ public class ProductServiceTests
     public async Task GetProductByCategory_WhenCategoryExist_ReturnsProducts()
     {
         // Arrange
-        await using var connection = new SqliteConnection("Data Source=:memory");
+        await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -362,7 +362,7 @@ public class ProductServiceTests
     public async Task GetProductByCategory_WhenCategoryDoesNotExist_ReturnsEmptyList()
     {
         // Arrange
-        await using var connection = new SqliteConnection("Data Source=:memory");
+        await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -386,7 +386,7 @@ public class ProductServiceTests
     public async Task CreateProduct_CreateNewProduct_ReturnsNewProduct()
     {
         // Arrange
-        await using var connection = new SqliteConnection("Data Source=:memory");
+        await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -430,7 +430,7 @@ public class ProductServiceTests
     public async Task UpdateProduct_UpdateExistingProduct_ReturnsProductWithNewData()
     {
         // Arrange
-        await using var connection = new SqliteConnection("Data Source=:memory");
+        await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -485,7 +485,7 @@ public class ProductServiceTests
     public async Task UpdateProduct_ProductDoesNotExist_ReturnsFalse()
     {
          // Arrange
-        await using var connection = new SqliteConnection("Data Source=:memory");
+        await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -514,7 +514,7 @@ public class ProductServiceTests
     public async Task DeleteProduct_ProductExists_ReturnsTrue()
     {
         // Arrange
-        await using var connection = new SqliteConnection("Data Source=:memory");
+        await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -552,7 +552,7 @@ public class ProductServiceTests
     public async Task DeleteProduct_ProductDoesNotExist_ReturnsFalse()
     {
         // Arrange
-        await using var connection = new SqliteConnection("Data Source=:memory");
+        await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
