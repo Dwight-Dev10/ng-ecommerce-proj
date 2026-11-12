@@ -1,4 +1,3 @@
-using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Mvc;
 using ng_ecommerce_api.DTOs.Products;
 using ng_ecommerce_api.Services;
@@ -11,7 +10,6 @@ public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
 
-    
     public ProductsController(IProductService productService)
     {
         _productService = productService;
