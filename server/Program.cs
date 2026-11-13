@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.HttpOverrides;
+
 using Microsoft.EntityFrameworkCore;
 using ng_ecommerce_api.Data;
 using ng_ecommerce_api.Services;
@@ -62,7 +62,9 @@ app.UseRouting();
 
 app.UseCors("AngularEcommercePolicy");
 
-// app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
