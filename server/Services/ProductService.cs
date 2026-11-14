@@ -108,7 +108,7 @@ public class ProductService : IProductService
             Id = product.Id,
             Name = product.Name,
             Price = product.Price,
-            ImageUrl = dto.ImageUrl,
+            ImageUrl = product.ImageUrl,
             Description = product.Description,
             Category = product.Category,
             InStock = product.InStock

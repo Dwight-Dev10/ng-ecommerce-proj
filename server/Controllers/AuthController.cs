@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ng_ecommerce_api.DTOs.Auth;
 using ng_ecommerce_api.Models;
+using ng_ecommerce_api.Services.Interfaces;
 
 namespace ng_ecommerce_api.Controllers;
 
@@ -10,10 +11,20 @@ namespace ng_ecommerce_api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IJwtTokenService _jwtTokenService;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(UserManager<ApplicationUser> userManager)
+    public AuthController(
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        IJwtTokenService jwtTokenService,
+        IConfiguration configuration)
     {
         _userManager = userManager;
+        _signInManager = signInManager;
+        _jwtTokenService = jwtTokenService;
+        _configuration = configuration;
     }
 
     [HttpPost("register")]
@@ -41,6 +52,41 @@ public class AuthController : ControllerBase
         {
             user.Id,
             user.Email
+        });
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginDto dto)
+    {
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+
+        if (user is null)
+        {
+            return Unauthorized(new { Message = "Invalid email or password." });
+        }
+
+        var result = await _signInManager.CheckPasswordSignInAsync(
+            user,
+            dto.Password,
+            lockoutOnFailure: true
+        );
+
+        Console.WriteLine($"Login succeeded: {result.Succeeded}");
+        Console.WriteLine($"Is locked out: {result.IsLockedOut}");
+        Console.WriteLine($"Is not allowed: {result.IsNotAllowed}");
+
+        if (!result.Succeeded)
+        {
+            return Unauthorized(new { Message = "Invalid email or password." });
+        }
+
+        var accessToken = await _jwtTokenService.CreateToken(user);
+
+        return Ok(new
+        {
+            AccessToken = accessToken,
+            TokenType = "Bearer",
+            ExpiresIn = 900
         });
     }
 }
