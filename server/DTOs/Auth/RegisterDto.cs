@@ -1,0 +1,23 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace ng_ecommerce_api.DTOs.Auth;
+
+public class RegisterDto
+{
+// The DTO ensures that:
+//  - Email is required and has a valid format.
+//  - Password is required.
+//  - ConfirmPassword matches Password.
+    
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; } = string.Empty;
+
+    [Required]
+    public string Password { get; set; } = string.Empty;
+
+    [Required]
+    [Compare(nameof(Password))]
+    public string ConfirmPassword { get; set; } = string.Empty;
+}
