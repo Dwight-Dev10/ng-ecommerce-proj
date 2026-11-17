@@ -321,6 +321,33 @@ namespace ng_ecommerce_api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ng_ecommerce_api.Models.SellerProfile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StoreName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("SellerProfiles");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -370,6 +397,22 @@ namespace ng_ecommerce_api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ng_ecommerce_api.Models.SellerProfile", b =>
+                {
+                    b.HasOne("ng_ecommerce_api.Models.ApplicationUser", "User")
+                        .WithOne("SellerProfile")
+                        .HasForeignKey("ng_ecommerce_api.Models.SellerProfile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ng_ecommerce_api.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("SellerProfile");
                 });
 #pragma warning restore 612, 618
         }

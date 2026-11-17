@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ng_ecommerce_api.Constants;
 using ng_ecommerce_api.DTOs.Auth;
 using ng_ecommerce_api.Models;
 using ng_ecommerce_api.Services.Interfaces;
@@ -21,7 +22,8 @@ public class AuthController : ControllerBase
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IJwtTokenService jwtTokenService,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -32,29 +34,31 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterDto dto)
     {
-        var user = new ApplicationUser
-        {
-            UserName = dto.Email,
-            Email = dto.Email
-        };
+        var user = new ApplicationUser { UserName = dto.Email, Email = dto.Email };
 
         var result = await _userManager.CreateAsync(user, dto.Password);
+
+        var roleResult = await _userManager.AddToRoleAsync(user, AppRoles.Customer);
+
+        if (!roleResult.Succeeded)
+        {
+            // Clean up the account if role assignment fails.
+            await _userManager.DeleteAsync(user);
+
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new { Errors = roleResult.Errors.Select(error => error.Description) }
+            );
+        }
 
         if (!result.Succeeded)
         {
             var errors = result.Errors.Select(error => error.Description);
 
-            return BadRequest(new
-            {
-                Errors = errors
-            });
+            return BadRequest(new { Errors = errors });
         }
 
-        return StatusCode(StatusCodes.Status201Created, new
-        {
-            user.Id,
-            user.Email
-        });
+        return StatusCode(StatusCodes.Status201Created, new { user.Id, user.Email });
     }
 
     [HttpPost("login")]
@@ -80,27 +84,27 @@ public class AuthController : ControllerBase
 
         var accessToken = await _jwtTokenService.CreateToken(user);
 
-        return Ok(new
-        {
-            AccessToken = accessToken,
-            TokenType = "Bearer",
-            ExpiresIn = 900
-        });
+        return Ok(
+            new
+            {
+                AccessToken = accessToken,
+                TokenType = "Bearer",
+                ExpiresIn = 900,
+            }
+        );
     }
 
     [Authorize]
     [HttpGet("me")]
     public IActionResult GetCurrentUser()
     {
-        return Ok(new
-        {
-            UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
-            Email = User.FindFirstValue(ClaimTypes.Email),
-            IsAuthenticated = User.Identity?.IsAuthenticated
-        });
+        return Ok(
+            new
+            {
+                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                Email = User.FindFirstValue(ClaimTypes.Email),
+                IsAuthenticated = User.Identity?.IsAuthenticated,
+            }
+        );
     }
-
-    
-
-    
 }

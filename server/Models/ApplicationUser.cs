@@ -14,6 +14,7 @@ public class ApplicationUser : IdentityUser<Guid>
 // - PhoneNumber
 // - LockoutEnabled
 // - AccessFailedCount
+    public SellerProfile? SellerProfile { get; set; }
     
     
 }

@@ -82,7 +82,14 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
                 Category = "Home & Kitchen"
             }
         );
+
+        modelBuilder.Entity<ApplicationUser>()
+            .HasOne(user => user.SellerProfile)
+            .WithOne(profile => profile.User)
+            .HasForeignKey<SellerProfile>(profile => profile.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     public DbSet<Product> Products { get; set; } // represents database table
+    public DbSet<SellerProfile> SellerProfiles => Set<SellerProfile>();
 }
