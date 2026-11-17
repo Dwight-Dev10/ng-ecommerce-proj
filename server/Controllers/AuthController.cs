@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ng_ecommerce_api.DTOs.Auth;
@@ -71,10 +73,6 @@ public class AuthController : ControllerBase
             lockoutOnFailure: true
         );
 
-        Console.WriteLine($"Login succeeded: {result.Succeeded}");
-        Console.WriteLine($"Is locked out: {result.IsLockedOut}");
-        Console.WriteLine($"Is not allowed: {result.IsNotAllowed}");
-
         if (!result.Succeeded)
         {
             return Unauthorized(new { Message = "Invalid email or password." });
@@ -89,4 +87,20 @@ public class AuthController : ControllerBase
             ExpiresIn = 900
         });
     }
+
+    [Authorize]
+    [HttpGet("me")]
+    public IActionResult GetCurrentUser()
+    {
+        return Ok(new
+        {
+            UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+            Email = User.FindFirstValue(ClaimTypes.Email),
+            IsAuthenticated = User.Identity?.IsAuthenticated
+        });
+    }
+
+    
+
+    
 }
