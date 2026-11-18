@@ -17,4 +17,15 @@ public class Product
     public int ReviewCount { get; set; }
     public bool InStock { get; set; }
     public string Category { get; set; } = string.Empty;
+
+    /* New relationship
+        - One SellerProfile can own multiple products.
+        - Every product must belong to exactly one seller profile.
+        - A customer can manage products through their seller profile.
+    */
+
+    [Required]
+    public Guid SellerProfileId { get; set; }
+
+    public SellerProfile SellerProfile { get; set; } = null!;
 }

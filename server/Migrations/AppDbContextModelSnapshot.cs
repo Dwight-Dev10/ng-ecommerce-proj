@@ -217,6 +217,23 @@ namespace ng_ecommerce_api.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "DEMO-STORE-OWNER-CONCURRENCY-STAMP",
+                            Email = "demo-store-owner@seed.local",
+                            EmailConfirmed = false,
+                            LockoutEnabled = true,
+                            NormalizedEmail = "DEMO-STORE-OWNER@SEED.LOCAL",
+                            NormalizedUserName = "DEMO-STORE-OWNER@SEED.LOCAL",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "DEMO-STORE-OWNER-SECURITY-STAMP",
+                            TwoFactorEnabled = false,
+                            UserName = "demo-store-owner@seed.local"
+                        });
                 });
 
             modelBuilder.Entity("ng_ecommerce_api.Models.Product", b =>
@@ -254,7 +271,12 @@ namespace ng_ecommerce_api.Migrations
                     b.Property<int>("ReviewCount")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("SellerProfileId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SellerProfileId");
 
                     b.ToTable("Products");
 
@@ -269,7 +291,8 @@ namespace ng_ecommerce_api.Migrations
                             Name = "Wireless Bluetooth Headphones",
                             Price = 199.99m,
                             Rating = 4.5,
-                            ReviewCount = 120
+                            ReviewCount = 120,
+                            SellerProfileId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
                         },
                         new
                         {
@@ -281,7 +304,8 @@ namespace ng_ecommerce_api.Migrations
                             Name = "Mechanical Gaming Keyboard",
                             Price = 89.50m,
                             Rating = 4.7999999999999998,
-                            ReviewCount = 85
+                            ReviewCount = 85,
+                            SellerProfileId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
                         },
                         new
                         {
@@ -293,7 +317,8 @@ namespace ng_ecommerce_api.Migrations
                             Name = "Ergonomic Office Chair",
                             Price = 249.00m,
                             Rating = 4.2000000000000002,
-                            ReviewCount = 45
+                            ReviewCount = 45,
+                            SellerProfileId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
                         },
                         new
                         {
@@ -305,7 +330,8 @@ namespace ng_ecommerce_api.Migrations
                             Name = "Ultra-Wide Monitor",
                             Price = 450.00m,
                             Rating = 4.7000000000000002,
-                            ReviewCount = 30
+                            ReviewCount = 30,
+                            SellerProfileId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
                         },
                         new
                         {
@@ -317,7 +343,8 @@ namespace ng_ecommerce_api.Migrations
                             Name = "Reusable Water Bottle",
                             Price = 25.00m,
                             Rating = 4.9000000000000004,
-                            ReviewCount = 210
+                            ReviewCount = 210,
+                            SellerProfileId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
                         });
                 });
 
@@ -346,6 +373,16 @@ namespace ng_ecommerce_api.Migrations
                         .IsUnique();
 
                     b.ToTable("SellerProfiles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Default store for demonstration products.",
+                            StoreName = "Demo Store",
+                            UserId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -397,6 +434,17 @@ namespace ng_ecommerce_api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ng_ecommerce_api.Models.Product", b =>
+                {
+                    b.HasOne("ng_ecommerce_api.Models.SellerProfile", "SellerProfile")
+                        .WithMany()
+                        .HasForeignKey("SellerProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SellerProfile");
                 });
 
             modelBuilder.Entity("ng_ecommerce_api.Models.SellerProfile", b =>
