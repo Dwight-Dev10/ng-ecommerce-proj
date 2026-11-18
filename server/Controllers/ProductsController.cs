@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ng_ecommerce_api.DTOs.Products;
 using ng_ecommerce_api.Services;
@@ -14,7 +16,7 @@ public class ProductsController : ControllerBase
     {
         _productService = productService;
     }
-    
+
     // GET
     [HttpGet]
     public async Task<IActionResult> GetProducts()
@@ -22,8 +24,7 @@ public class ProductsController : ControllerBase
         var products = await _productService.GetAllProducts();
         return Ok(products);
     }
-    
-    
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById(Guid id)
     {
@@ -34,7 +35,7 @@ public class ProductsController : ControllerBase
         }
         return Ok(product);
     }
-    
+
     // Get product by Name
     [HttpGet("name/{name}")]
     public async Task<IActionResult> GetProductsByName(string name)
@@ -54,12 +55,11 @@ public class ProductsController : ControllerBase
         var products = await _productService.SearchForProducts(name);
         return Ok(products);
     }
-    
+
     // GET products by Category
     [HttpGet("category/{category}")]
     public async Task<IActionResult> GetProductsByCategory(string category)
     {
-
         var productsInCategory = await _productService.GetProductByCategory(category);
         if (productsInCategory.Any())
         {
@@ -69,36 +69,54 @@ public class ProductsController : ControllerBase
     }
 
     //Create
+    [Authorize]
     [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody]CreateProductDto productDto)
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto productDto)
     {
-        var product = await _productService.CreateProduct(productDto);
-      
+        var userId = GetCurrentUserId();
+
+        var product = await _productService.CreateProduct(userId, productDto);
+
+        if (product is null)
+        {
+            return BadRequest(
+                new { Message = "You must create a seller profile before listing products." }
+            );
+        }
+
         return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
     }
-    
-    
-    // Update
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductDto updateProduct)
-    {
-        var  product =  await _productService.UpdateProduct(id, updateProduct);
 
-        if (!product) return NotFound();
-        
+    // Update
+    [Authorize]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateProduct(
+        Guid id,
+        [FromBody] UpdateProductDto updateProduct
+    )
+    {
+        var userId = GetCurrentUserId();
+
+        var updated = await _productService.UpdateProduct(userId, id, updateProduct);
+
+        if (!updated)
+            return NotFound();
+
         return NoContent();
     }
-    
-    // Delete
+
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProduct(Guid id)
     {
-        var product = await _productService.DeleteProduct(id);
-        
-        if (!product) return NotFound();
-        
-        return NoContent();
+        var userId = GetCurrentUserId();
 
+        var deleted = await _productService.DeleteProduct(userId, id);
+
+        if (!deleted)
+            return NotFound();
+
+        return NoContent();
     }
 
     [HttpGet("count")]
@@ -108,5 +126,21 @@ public class ProductsController : ControllerBase
 
         return Ok(count);
     }
-    
+
+    // private helper
+    private Guid GetCurrentUserId()
+    {
+        return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    }
+
+    [Authorize]
+    [HttpGet("my-products")]
+    public async Task<IActionResult> GetMyProducts()
+    {
+        var userId = GetCurrentUserId();
+
+        var products = await _productService.GetMyProducts(userId);
+
+        return Ok(products);
+    }
 }

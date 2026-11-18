@@ -85,11 +85,20 @@ public class ProductService : IProductService
             }).ToListAsync();
     }
 
-    public async Task<ProductDto> CreateProduct(CreateProductDto dto)
+    public async Task<ProductDto?> CreateProduct(
+        Guid userId,
+        CreateProductDto dto)
     {
+        var sellerProfile = await _context.SellerProfiles
+            .FirstOrDefaultAsync(sp => sp.UserId == userId);
+
+        if (sellerProfile is null)
+            return null;
+
         var product = new Product
         {
             Id = Guid.NewGuid(),
+            SellerProfileId = sellerProfile.Id,
             Name = dto.Name,
             Description = dto.Description,
             Price = dto.Price,
@@ -107,19 +116,26 @@ public class ProductService : IProductService
         {
             Id = product.Id,
             Name = product.Name,
+            Description = product.Description,
             Price = product.Price,
             ImageUrl = product.ImageUrl,
-            Description = product.Description,
             Category = product.Category,
             InStock = product.InStock
         };
     }
     
-    public async Task<bool> UpdateProduct(Guid id, UpdateProductDto dto)
+    public async Task<bool> UpdateProduct(
+        Guid userId,
+        Guid id,
+        UpdateProductDto dto)
     {
-        var product = await _context.Products.FindAsync(id);
+        var product = await _context.Products
+            .FirstOrDefaultAsync(p =>
+                p.Id == id &&
+                p.SellerProfile.UserId == userId);
 
-        if (product == null) return false;
+        if (product is null)
+            return false;
 
         product.Name = dto.Name;
         product.Description = dto.Description;
@@ -133,11 +149,15 @@ public class ProductService : IProductService
         return true;
     }
     
-    public async Task<bool> DeleteProduct(Guid id)
+    public async Task<bool> DeleteProduct(Guid userId, Guid id)
     {
-        var product = await _context.Products.FindAsync(id);
+        var product = await _context.Products
+            .FirstOrDefaultAsync(p =>
+                p.Id == id &&
+                p.SellerProfile.UserId == userId);
 
-        if (product == null) return false;
+        if (product is null)
+            return false;
 
         _context.Products.Remove(product);
         await _context.SaveChangesAsync();
@@ -148,6 +168,23 @@ public class ProductService : IProductService
     public async Task<int> GetProductCount()
     {
         return await _context.Products.CountAsync();
+    }
+
+    public async Task<IEnumerable<ProductDto>> GetMyProducts(Guid userId)
+    {
+        return await _context.Products
+            .Where(p => p.SellerProfile.UserId == userId)
+            .Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                ImageUrl = p.ImageUrl,
+                Category = p.Category,
+                InStock = p.InStock
+            })
+            .ToListAsync();
     }
 
     
