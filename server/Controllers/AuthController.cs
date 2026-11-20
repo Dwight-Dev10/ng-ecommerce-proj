@@ -38,6 +38,19 @@ public class AuthController : ControllerBase
 
         var result = await _userManager.CreateAsync(user, dto.Password);
 
+        if (!result.Succeeded)
+        {
+            return ValidationProblem(new ValidationProblemDetails
+            {
+                Errors = result.Errors
+                    .GroupBy(e => e.Code)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Select(e => e.Description).ToArray()
+                        )
+            });
+        }
+
         var roleResult = await _userManager.AddToRoleAsync(user, AppRoles.Customer);
 
         if (!roleResult.Succeeded)
@@ -51,14 +64,10 @@ public class AuthController : ControllerBase
             );
         }
 
-        if (!result.Succeeded)
-        {
-            var errors = result.Errors.Select(error => error.Description);
-
-            return BadRequest(new { Errors = errors });
-        }
-
-        return StatusCode(StatusCodes.Status201Created, new { user.Id, user.Email });
+        return CreatedAtAction(
+            nameof(Register),
+            new { user.Id, user.Email }
+        );
     }
 
     [HttpPost("login")]
