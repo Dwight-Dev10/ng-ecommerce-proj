@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Product } from '../models/product';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { privateDecrypt } from 'node:crypto';
 
 @Injectable({
   providedIn: 'root'
