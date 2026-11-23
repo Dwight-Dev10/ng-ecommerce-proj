@@ -16,9 +16,11 @@ import SignInDialog from './components/sign-in-dialog/sign-in-dialog';
 import { SignInParams, SignUpParams, User } from './models/user';
 import { Router } from '@angular/router';
 import { Order } from './models/orders';
-import { withStorageSync } from '@angular-architects/ngrx-toolkit';
 import { AddReviewParams, UserReview } from './models/user-review';
 import { ProductService } from './services/ProductService';
+import { AuthService } from './services/auth.service';
+import { AuthenticatedUser } from './models/auth/authenticated-user.model';
+import { switchMap } from 'rxjs';
 
 export type EcommerceState = {
   products: Product[];
@@ -46,7 +48,7 @@ export const EcommerceStore = signalStore(
   {
     providedIn: 'root', //primary way to define a service in Angular that is available globally throughout your application
   },
-  withState({
+  withState({ //  initial state object.
     products: [],
     category: 'all',
     // categories: [],
@@ -54,7 +56,7 @@ export const EcommerceStore = signalStore(
     wishlistItems: [],
     cartItems: [],
     user: undefined,
-    
+
     searchedResults: [],
     searchTerm: '',
 
@@ -88,7 +90,7 @@ export const EcommerceStore = signalStore(
     cartCount: computed(() => cartItems().reduce((total, item) => total + item.quantity, 0)),
     selectedProduct: computed(() => products().find((p) => p.id === selectedProductId())),
 
-    
+
   })),
 
   withMethods(
@@ -98,6 +100,7 @@ export const EcommerceStore = signalStore(
       matDialog = inject(MatDialog),
       router = inject(Router),
       productService = inject(ProductService),
+      authService = inject(AuthService),
     ) => ({
       loadProducts: () => {
         productService.getProducts().subscribe({
@@ -113,17 +116,17 @@ export const EcommerceStore = signalStore(
 
       searchProducts(searchTerm: string) {
         const term = searchTerm.trim();
-        
+
         if (!term) {
-          patchState(store,{ searchTerm: '', searchedResults: [], loading:false} );
+          patchState(store, { searchTerm: '', searchedResults: [], loading: false });
           return;
         }
-        patchState(store, { searchTerm: term , loading: true });
+        patchState(store, { searchTerm: term, loading: true });
 
         productService.getSearchForProduct(term).subscribe({
           next: (results) => {
-            patchState(store, {searchedResults: results,  loading: false });
-          console.log(results)
+            patchState(store, { searchedResults: results, loading: false });
+            console.log(results)
 
           },
           error: (err) => {
@@ -136,10 +139,10 @@ export const EcommerceStore = signalStore(
 
 
       setCategory: signalMethod<string>((category: string) => {
-        patchState(store, {category});
+        patchState(store, { category });
       }),
 
-      
+
       setProductId: signalMethod<string>((productId: string) => {
         patchState(store, { selectedProductId: productId });
       }),
@@ -153,14 +156,14 @@ export const EcommerceStore = signalStore(
         patchState(store, { wishlistItems: updatedWishlistItems });
         toaster.success(`${product.name} added to wishlist!`);
       },
-      
+
       removeFromWishlist: (product: Product) => {
         patchState(store, {
           wishlistItems: store.wishlistItems().filter((p) => p.id !== product.id),
         });
         toaster.error(`${product.name} removed from wishlist!`);
       },
-      
+
       clearWishlist: () => {
         patchState(store, { wishlistItems: [] });
       },
@@ -260,18 +263,39 @@ export const EcommerceStore = signalStore(
       },
 
       signIn: ({ email, password, checkout, dialogId }: SignInParams) => {
-        patchState(store, {
-          user: {
-            id: '1',
-            name: 'John Doe',
-            email,
-            imageUrl: 'https://randomuser.me/api/portraits/men/1.jpg',
-          },
-        });
-        matDialog.getDialogById(dialogId)?.close();
-        if (checkout) {
-          router.navigate(['/checkout']);
-        }
+        patchState(store, { loading: true });
+
+        authService.login({ email, password })
+          .pipe(
+            switchMap(() => authService.getMe())
+          )
+          .subscribe({
+            next: (authenticatedUser) => {
+              patchState(store, {
+                user: {
+                  id: authenticatedUser.userId,
+                  name: authenticatedUser.email,
+                  email: authenticatedUser.email,
+                  imageUrl: '',
+                },
+                loading: false,
+              });
+
+              matDialog.getDialogById(dialogId)?.close();
+
+              if (checkout) {
+                router.navigate(['/checkout']);
+              }
+            },
+            error: (err) => {
+              console.error('Authentication flow failed', err);
+
+              authService.clearToken();
+              patchState(store, { loading: false });
+
+              toaster.error('Unable to sign in. Check your credentials and try again.');
+            },
+          });
       },
 
       signOut: () => {
@@ -331,7 +355,7 @@ export const EcommerceStore = signalStore(
             Math.round(
               (draft[productIndex].reviews.reduce((acc, r) => acc + r.rating, 0) /
                 draft[productIndex].reviews.length) *
-                10,
+              10,
             ) / 10;
           draft[productIndex].reviewCount = draft[productIndex].reviews.length;
         });
