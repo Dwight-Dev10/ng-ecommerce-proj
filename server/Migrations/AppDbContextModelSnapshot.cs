@@ -179,6 +179,10 @@ namespace ng_ecommerce_api.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -227,6 +231,7 @@ namespace ng_ecommerce_api.Migrations
                             Email = "demo-store-owner@seed.local",
                             EmailConfirmed = false,
                             LockoutEnabled = true,
+                            Name = "",
                             NormalizedEmail = "DEMO-STORE-OWNER@SEED.LOCAL",
                             NormalizedUserName = "DEMO-STORE-OWNER@SEED.LOCAL",
                             PhoneNumberConfirmed = false,

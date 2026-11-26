@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { UserReview } from '../../../models/user-review';
+import { UserReview } from '../../../models/user/user-review';
 import { ViewPanel } from '../../../directives/view-panel';
 import { StarRating } from "../../../components/star-rating/star-rating";
 import { DatePipe } from '@angular/common';

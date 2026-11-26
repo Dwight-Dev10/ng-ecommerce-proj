@@ -6,9 +6,12 @@ namespace ng_ecommerce_api.DTOs.Auth;
 public class RegisterDto
 {
 // The DTO ensures that:
+//  - Name is required
 //  - Email is required and has a valid format.
 //  - Password is required.
 //  - ConfirmPassword matches Password.
+    [Required]
+    public string Name { get; set; } = string.Empty;
     
     [Required]
     [EmailAddress]

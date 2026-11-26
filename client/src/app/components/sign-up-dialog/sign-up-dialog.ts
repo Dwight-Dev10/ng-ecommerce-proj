@@ -6,7 +6,7 @@ import { MatFormField, MatSuffix, MatPrefix } from '@angular/material/form-field
 import { MatIcon } from "@angular/material/icon";
 import { MatInput } from '@angular/material/input';
 import { EcommerceStore } from '../../ecommerce-store';
-import { SignUpParams } from '../../models/user';
+import { SignUpParams } from '../../models/user/user';
 import SignInDialog from '../sign-in-dialog/sign-in-dialog';
 
 @Component({
@@ -60,7 +60,7 @@ export default class SignUpDialog {
   fb = inject(NonNullableFormBuilder);
   store = inject(EcommerceStore);
   dialogRef = inject(MatDialogRef);
-  data = inject<{checkout: boolean}>(MAT_DIALOG_DATA);
+  data = inject<{ checkout: boolean }>(MAT_DIALOG_DATA);
   matDialog = inject(MatDialog);
 
   signUpForm = this.fb.group({
@@ -69,28 +69,35 @@ export default class SignUpDialog {
     password: ['password123', Validators.required],
     confirmPassword: ['password123', Validators.required],
   });
-  
+
 
   signUp() {
+    if (!this.signUpForm.valid) {
+      this.signUpForm.markAllAsTouched();
+      return;
+    }
 
-    if (!this.signUpForm.valid){
-    this.signUpForm.markAllAsTouched();
-    return;
+    const { name, email, password, confirmPassword } = this.signUpForm.getRawValue();
+
+    this.store.signUp({
+      name,
+      email,
+      password,
+      confirmPassword,
+      checkout: this.data?.checkout,
+      dialogId: this.dialogRef.id
+    });
   }
 
-    const {name, email, password} = this.signUpForm.value;
 
-    this.store.signUp({name, email, password, checkout: this.data?.checkout, dialogId: this.dialogRef.id } as SignUpParams);
-  }
-
-  openSignUpDialog(){
+  openSignUpDialog() {
     this.dialogRef.close();
     this.matDialog.open(SignInDialog, {
       disableClose: true,
       data: {
-          checkout: this.data?.checkout,
+        checkout: this.data?.checkout,
       }
     });
-  } 
+  }
 
 }

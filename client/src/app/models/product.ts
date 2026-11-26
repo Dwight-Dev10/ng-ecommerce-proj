@@ -1,4 +1,4 @@
-import { UserReview } from "./user-review";
+import { UserReview } from "./user/user-review";
 
 export type Product = {
     id: string;

@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 import { LoginRequest } from '../models/auth/login-request.model';
 import { AuthResponse } from '../models/auth/auth-response.model';
 import { AuthenticatedUser } from '../models/auth/authenticated-user.model';
+import { RegisterRequest } from '../models/auth/register-request.model';
 
 @Injectable({
     providedIn: 'root'
@@ -17,6 +18,10 @@ export class AuthService {
     private apiUrl = `${environment.apiUrl}/auth`;
 
     private accessToken = signal<string | null>(null);
+
+    register(request: RegisterRequest): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/register`, request);
+    }
 
     login(request: LoginRequest): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(

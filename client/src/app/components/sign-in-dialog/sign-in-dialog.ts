@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogClose, MatDialogRef } from '@angul
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { SignInParams } from '../../models/user';
+import { SignInParams } from '../../models/user/user';
 import { EcommerceStore } from '../../ecommerce-store';
 import SignUpDialog from '../sign-up-dialog/sign-up-dialog';
 

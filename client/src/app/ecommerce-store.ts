@@ -13,10 +13,10 @@ import { Toaster } from './services/toaster';
 import { CartItem } from './models/cart';
 import { MatDialog } from '@angular/material/dialog';
 import SignInDialog from './components/sign-in-dialog/sign-in-dialog';
-import { SignInParams, SignUpParams, User } from './models/user';
+import { SignInParams, SignUpParams, User } from './models/user/user';
 import { Router } from '@angular/router';
 import { Order } from './models/orders';
-import { AddReviewParams, UserReview } from './models/user-review';
+import { AddReviewParams, UserReview } from './models/user/user-review';
 import { ProductService } from './services/ProductService';
 import { AuthService } from './services/auth.service';
 import { AuthenticatedUser } from './models/auth/authenticated-user.model';
@@ -302,19 +302,40 @@ export const EcommerceStore = signalStore(
         patchState(store, { user: undefined });
       },
 
-      signUp: ({ email, password, name, checkout, dialogId }: SignUpParams) => {
-        patchState(store, {
-          user: {
-            id: '1',
-            name: 'John Doe',
-            email,
-            imageUrl: 'https://randomuser.me/api/portraits/men/1.jpg',
+      //       Call AuthService.register().
+      // Set loading while the request is in progress.
+      // Close the sign-up dialog on success.
+      // Open the sign-in dialog so the user can log in.
+      // Display an error if registration fails.
+
+      signUp: ({ name, email, password, confirmPassword, checkout, dialogId }: SignUpParams) => {
+        patchState(store, { loading: true });
+
+        authService.register({
+          name,
+          email,
+          password,
+          confirmPassword
+        }).subscribe({
+          next: () => {
+            patchState(store, { loading: false });
+
+            matDialog.getDialogById(dialogId)?.close();
+
+            matDialog.open(SignInDialog, {
+              data: { checkout }
+            });
+
+            toaster.success('Account created successfully. Please sign in.');
           },
+          error: (err) => {
+            console.error('Registration failed', err);
+
+            patchState(store, { loading: false });
+
+            toaster.error('Unable to create account. Please try again.');
+          }
         });
-        matDialog.getDialogById(dialogId)?.close();
-        if (checkout) {
-          router.navigate(['/checkout']);
-        }
       },
 
       showWriteReview: () => {

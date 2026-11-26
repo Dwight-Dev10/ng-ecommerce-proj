@@ -8,7 +8,7 @@ import { MatOption } from '@angular/material/core';
 import { ViewPanel } from '../../../directives/view-panel';
 import { MatSelect } from '@angular/material/select';
 import { EcommerceStore } from '../../../ecommerce-store';
-import { AddReviewParams } from '../../../models/user-review';
+import { AddReviewParams } from '../../../models/user/user-review';
 
 @Component({
   selector: 'app-write-review',

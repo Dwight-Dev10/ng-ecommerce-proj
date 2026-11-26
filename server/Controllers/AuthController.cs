@@ -34,7 +34,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterDto dto)
     {
-        var user = new ApplicationUser { UserName = dto.Email, Email = dto.Email };
+        var user = new ApplicationUser { UserName = dto.Email, Email = dto.Email, Name = dto.Name };
 
         var result = await _userManager.CreateAsync(user, dto.Password);
 
@@ -66,7 +66,7 @@ public class AuthController : ControllerBase
 
         return CreatedAtAction(
             nameof(Register),
-            new { user.Id, user.Email }
+            new { user.Id, user.Email, user.Name }
         );
     }
 
